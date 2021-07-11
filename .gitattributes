@@ -1,0 +1,3 @@
+v.mod linguist-vendored
+*.vv linguist-language=V
+*.v  linguist-language=V
