@@ -1,0 +1,36 @@
+import uwu.cli
+import uwu
+
+fn play() ? {
+	mut app := cli.new_app(
+		brief: 'A demo app using the `uwu.cli` module'
+		item: 'item'
+		// is_optional: true
+		notes: [
+			'This is a sample note',
+		]
+	)
+
+	// flag_m :=
+	app.flag(
+		brief: 'A dummy flag that captures one value'
+		alias: `m`
+		value: 'dummy'
+	)
+	// flag_s :=
+	app.int_flag(
+		brief: 'A dummy flag that captures an integer'
+		alias: `s`
+		name: 'size'
+		item: 'value'
+		value: '5'
+	)
+
+	app.parse() ?
+
+	println(*app)
+}
+
+fn main() {
+	play() or { uwu.catch(err) }
+}
