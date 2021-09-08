@@ -1,6 +1,8 @@
 module uwu
 
-import ups
+import uwu.ups
+import uwu.tag
+
 import os
 
 // get_args return the command-line arguments.
@@ -31,9 +33,9 @@ pub fn need_env(name string) ?string {
 [noreturn]
 pub fn catch(err IError) {
 	if err.code != 0 {
-		eprint('\e[1;31mError\e[0m: ')
+		eprint(tag.fail('Error') + ' ')
 	}
-	eprintln(err.msg + '.')
+	eprintln(err.msg)
 	exit(err.code)
 }
 
