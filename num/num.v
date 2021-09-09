@@ -34,11 +34,11 @@ pub fn min<T>(a T, b T) T {
 // max get the maximum value of the two provided.
 [inline]
 pub fn max_of<T>(ary []T) T {
-	if ary.len == 0 {
+	if ary.len < 1 {
 		panic(@FN + ' called on an empty array.')
 	}
 	mut res := ary[0]
-	for val in ary[1..] {
+	for val in ary {
 		if val > res {
 			res = val
 		}
@@ -49,11 +49,11 @@ pub fn max_of<T>(ary []T) T {
 // min get the minimum value of the two provided.
 [inline]
 pub fn min_of<T>(ary []T) T {
-	if ary.len == 0 {
+	if ary.len < 1 {
 		panic(@FN + ' called on an empty array.')
 	}
 	mut res := ary[0]
-	for val in ary[1..] {
+	for val in ary {
 		if val < res {
 			res = val
 		}
