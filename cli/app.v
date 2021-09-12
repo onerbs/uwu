@@ -46,26 +46,12 @@ pub fn new_app(cfg AppConfig) &App {
 	return app
 }
 
-// // get the value of the identified flag.
-// // todo: use memory.
-// pub fn (self App) get(id string) string {
-// 	flag := self.flags.get(id) or { return '' }
-// 	return flag.value
-// }
-
-// // get the value of the identified flag
-// // todo: use memory.
-// pub fn (self App) got(id string) bool {
-// 	flag := self.flags.get(id) or { return false }
-// 	return flag.value == 'true'
-// }
-
-// get_args
+// get_args return the application arguments.
 pub fn (self App) get_args() []string {
 	return self.args
 }
 
-// get_input
+// get_input return the content of the standard input.
 pub fn (self App) get_input() string {
 	if self.with_stdin {
 		return self.input
@@ -73,17 +59,17 @@ pub fn (self App) get_input() string {
 	return self.args.join(' ')
 }
 
-// get_lines
+// get_lines return the lines from the standard input.
 pub fn (self App) get_lines() []string {
 	return self.get_input().split_into_lines()
 }
 
 // -----------------
 
-// flag create a new Flag.
-pub fn (mut self App) flag(ft FlagType) &Flag {
+// flag create and push a flag with value.
+pub fn (mut self App) flag(it FlagType) &Flag {
 	flag := &Flag{
-		FlagType: ft
+		FlagType: it
 		kind: .string
 		metro: &self.metro
 	}
@@ -91,10 +77,10 @@ pub fn (mut self App) flag(ft FlagType) &Flag {
 	return flag
 }
 
-// bool_flag create a new Flag with boolean value.
-pub fn (mut self App) bool_flag(ft FlagType) &Flag {
+// bool_flag create and push a boolean flag.
+pub fn (mut self App) bool_flag(it FlagType) &Flag {
 	flag := &Flag{
-		FlagType: ft
+		FlagType: it
 		kind: .bool
 		metro: &self.metro
 	}
@@ -102,10 +88,10 @@ pub fn (mut self App) bool_flag(ft FlagType) &Flag {
 	return flag
 }
 
-// // float_flag create a new Flag with numeric value.
-// pub fn (mut self App) float_flag(ft FlagType) &Flag {
+// // float_flag create and push a flag with numeric value.
+// pub fn (mut self App) float_flag(it FlagType) &Flag {
 // 	flag := &Flag{
-// 		FlagType: ft
+// 		FlagType: it
 // 		kind: .float
 //		metro: &self.metro
 // 	}
@@ -113,10 +99,10 @@ pub fn (mut self App) bool_flag(ft FlagType) &Flag {
 // 	return flag
 // }
 
-// int_flag create a new Flag with numeric value.
-pub fn (mut self App) int_flag(ft FlagType) &Flag {
+// int_flag create and push a flag with numeric value.
+pub fn (mut self App) int_flag(it FlagType) &Flag {
 	flag := &Flag{
-		FlagType: ft
+		FlagType: it
 		kind: .int
 		metro: &self.metro
 	}
@@ -124,10 +110,10 @@ pub fn (mut self App) int_flag(ft FlagType) &Flag {
 	return flag
 }
 
-// push_flag create a new Flag with numeric value.
-fn (mut self App) push_flag(ptr &Flag) {
+// push_flag sets the flag metro and pus it into the application flags.
+fn (mut self App) push_flag(it &Flag) {
 	unsafe {
-		mut flag := ptr
+		mut flag := it
 		flag.metro = &self.metro
 		self.flags << flag
 	}

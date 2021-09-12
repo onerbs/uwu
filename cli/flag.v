@@ -29,8 +29,6 @@ mut:
 	metro &int = 0
 }
 
-// -----------------
-
 pub fn (self &Flag) bool() bool {
 	return self.value == 'true'
 }
@@ -56,5 +54,5 @@ pub fn (ary []&Flag) get(id string) ?&Flag {
 		}
 	}
 	ups.unknown('flag', id) ?
-	return none
+	return none // unreachable.
 }

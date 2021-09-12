@@ -3,6 +3,8 @@ module cli
 import uwu.ups
 import uwu
 
+// TODO improve the argument parser.
+
 // parse
 pub fn (mut self App) parse() ? {
 	return self.parse_args(uwu.get_args())
