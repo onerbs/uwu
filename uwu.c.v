@@ -1,10 +1,10 @@
 module uwu
 
-import ups
-import put
-import buffer
+import uwu.ups
+import uwu.tag
+import uwu.buffer
 
-// get_input read data from the standard input.
+// get_bytes read all bytes from the standard input.
 pub fn get_bytes() []byte {
 	mut buf := []byte{cap: 0x200}
 	for {
@@ -17,8 +17,7 @@ pub fn get_bytes() []byte {
 	return buf
 }
 
-// get_input read data from the standard input.
-// trailing white spaces are trimmed from the result.
+// get_input read from the standard input as string.
 pub fn get_input() string {
 	mut buf := buffer.new()
 	for {
@@ -26,7 +25,9 @@ pub fn get_input() string {
 		if c < 0 {
 			break
 		}
-		buf << byte(c)
+		if c != `\r` {
+			buf << byte(c)
+		}
 	}
 	return buf.strip()
 }
@@ -47,34 +48,58 @@ pub fn get_lines() []string {
 			if s.len > 0 {
 				res << s
 			}
-		} else {
+		} else if c != `\r` {
 			buf << byte(c)
+		}
+	}
+	if buf.len > 0 {
+		s := buf.strip()
+		if s.len > 0 {
+			res << s
 		}
 	}
 	return res
 }
 
-// get_input_from will read the standard input only if `args`
-// contains a single dash alone (['-']), otherwise return
-// the argument list as a single string.
-pub fn get_input_from(args []string) string {
-	if args == ['-'] {
-		return get_input()
+// get_all_lines read all lines from the standard input.
+pub fn get_all_lines() []string {
+	mut buf := buffer.new()
+	mut res := []string{}
+	for {
+		c := C.getchar()
+		if c < 0 {
+			break
+		}
+		if c == `\n` {
+			res << buf.str()
+		} else if c != `\r` {
+			buf << byte(c)
+		}
 	}
-	return args.join(' ')
-}
-
-// get_lines_from will read the standard input lines only
-// if `args` contains a single dash alone (['-']), otherwise
-// return the argument list.
-pub fn get_lines_from(args []string) []string {
-	if args == ['-'] {
-		return get_lines()
+	if buf.len > 0 {
+		res << buf.str()
 	}
-	return args
+	return res
 }
 
 fn C.fgetc(&C.FILE) int
+
+// read_bytes read all bytes from the given file.
+pub fn read_bytes() []byte {
+	fp := fopen(path, 'r') ?
+	defer {
+		C.fclose(fp)
+	}
+	mut buf := []byte{cap: 0x200}
+	for {
+		c := C.fgetc(fp)
+		if c < 0 {
+			break
+		}
+		buf << byte(c)
+	}
+	return buf
+}
 
 // read_file read the content of the given file.
 // trailing white spaces are trimmed from the result.
@@ -89,12 +114,14 @@ pub fn read_file(path string) ?string {
 		if c < 0 {
 			break
 		}
-		buf << byte(c)
+		if c != `\r` {
+			buf << byte(c)
+		}
 	}
 	return buf.strip()
 }
 
-// read_file read the lines of the given file.
+// read_lines read the lines of the given file.
 // trailing white spaces are trimmed from every line.
 // the result does not contains empty lines.
 pub fn read_lines(path string) ?[]string {
@@ -114,12 +141,40 @@ pub fn read_lines(path string) ?[]string {
 			if s.len > 0 {
 				res << s
 			}
-		} else {
+		} else if c != `\r` {
 			buf << byte(c)
 		}
 	}
 	if buf.len > 0 {
-		res << buf.strip()
+		s := buf.strip()
+		if s.len > 0 {
+			res << s
+		}
+	}
+	return res
+}
+
+// read_all_lines read all lines from the given file.
+pub fn read_all_lines(path string) ?[]string {
+	fp := fopen(path, 'r') ?
+	defer {
+		C.fclose(fp)
+	}
+	mut buf := buffer.new()
+	mut res := []string{}
+	for {
+		c := C.fgetc(fp)
+		if c < 0 {
+			break
+		}
+		if c == `\n` {
+			res << buf.str()
+		} else if c != `\r` {
+			buf << byte(c)
+		}
+	}
+	if buf.len > 0 {
+		res << buf.str()
 	}
 	return res
 }
@@ -156,9 +211,9 @@ fn fwrite(path string, mode string, data &byte, len int) ?int {
 	size := int(C.fwrite(data, 1, len, fp))
 	if size < len {
 		$if debug {
-			put.info('size: $size; len: $len')
+			eprintln(tag.yellow('info') + ' size: $size; len: $len')
 		}
-		ups.cannot('write', path) ?
+		ups.cannot('write to', path) ?
 	}
 	return size
 }
