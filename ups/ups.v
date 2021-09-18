@@ -1,40 +1,51 @@
 module ups
 
-[inline]
+import uwu.str
+import term
+
 pub fn cannot(act string, target string) ? {
-	raise('cannot $act $target') ?
+	raise('cannot $act ' + high(target)) ?
 }
 
-[inline]
 pub fn missing(kind string, name string) ? {
-	raise('missing $kind $name') ?
+	raise('missing $kind ' + high(name)) ?
 }
 
-[inline]
 pub fn missing_value(kind string, name string) ? {
-	raise('the $kind "$name" has no value') ?
+	val := high(str.quote(name))
+	raise('the $kind $val has no value') ?
 }
 
-[inline]
+pub fn invalid(kind string, value string) ? {
+	val := high(str.quote(value))
+	raise('invalid $kind $val') ?
+}
+
 pub fn unknown(kind string, value string) ? {
-	raise('unknown $kind $value') ?
+	val := high(str.quote(value))
+	raise('unknown $kind $val') ?
 }
 
-[inline]
 pub fn unexpected(value string, kind string) ? {
-    raise('unexpected value `$value`, expecting $kind') ?
+	val := high(str.brace(value, '`'))
+	raise('unexpected value $val, expecting $kind') ?
 }
 
-[inline]
-pub fn too_many(kind string, max int, val int) ? {
+pub fn too_many(kind string, max int, value int) ? {
+	val := high(value.str())
 	raise('too many $kind: expecting less than $max, got $val') ?
 }
 
-[inline]
-pub fn not_enough(kind string, min int, val int) ? {
+pub fn not_enough(kind string, min int, value int) ? {
+	val := high(value.str())
 	raise('not enough $kind: expecting at least $min, got $val') ?
 }
 
+// raise returns an error with code `1`
 pub fn raise(msg string) ? {
-    return error_with_code(msg, 1)
+	return error_with_code(msg, 1)
+}
+
+fn high(base string) string {
+	return term.colorize(base, term.bold)
 }
