@@ -85,7 +85,7 @@ pub fn get_all_lines() []string {
 fn C.fgetc(&C.FILE) int
 
 // read_bytes read all bytes from the given file.
-pub fn read_bytes() []byte {
+pub fn read_bytes(path string) ?[]byte {
 	fp := fopen(path, 'r') ?
 	defer {
 		C.fclose(fp)
