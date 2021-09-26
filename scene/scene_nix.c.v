@@ -2,6 +2,19 @@ module scene
 
 #include <termios.h>
 
+struct C.termios {
+mut:
+	c_iflag int
+	c_oflag int
+	c_cflag int
+	c_lflag int
+	c_cc [10]int
+}
+
+fn C.tcgetattr(fd int, ptr &C.termios) int
+
+fn C.tcsetattr(fd int, action int, ptr &C.termios)
+
 const ts_normal = C.termios{}
 
 fn init() {
