@@ -2,10 +2,9 @@ module uwu
 
 import uwu.str
 import uwu.scene
-import term
 
 // input_secret read input from the user.
-pub fn input_secret(hint_ string) string {
+pub fn input_secret(hint string) string {
 	print(highlight(hint))
 
 	scene.raw_mode()
@@ -23,7 +22,7 @@ pub fn input_secret(hint_ string) string {
 			} else if chr == 127 {
 				buf.trim(buf.len - 1)
 				print('\r\e[2K')
-				print(hint + str.repeat(`*`, buf.len))
+				print(highlight(hint) + str.repeat(`*`, buf.len))
 			} else if chr >= ` ` {
 				buf << byte(chr)
 				print('*')
