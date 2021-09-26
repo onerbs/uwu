@@ -8,17 +8,17 @@ struct Table {
 
 // source create a Table from a string
 pub fn source(src string) Table {
-	return new().source(src)
+	return TableConfig{}.source(src)
 }
 
 // lines create a Table from a list of lines
 pub fn lines(src []string) Table {
-	return new().lines(src)
+	return TableConfig{}.lines(src)
 }
 
 // matrix create a Table from a string matrix
 pub fn matrix(src [][]string) Table {
-	return new().matrix(src)
+	return TableConfig{}.matrix(src)
 }
 
 // str returns a string representation of this `Table`

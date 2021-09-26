@@ -6,8 +6,8 @@ pub struct TableConfig {
 	gap byte   = 2
 }
 
-// new create a `Table` with the specified configuration.
-pub fn new(self TableConfig) TableConfig {
+// config create a `Table` with the specified configuration.
+pub fn config(self TableConfig) TableConfig {
 	return self
 }
 
@@ -32,11 +32,7 @@ pub fn (self TableConfig) matrix(src [][]string) Table {
 			break
 		}
 	}
-	return Table{
-		data: data
-		metro: metro
-		gap: self.gap
-	}
+	return Table{data, metro, self.gap}
 }
 
 // parse_row parse the raw row updating the metro data.
