@@ -29,6 +29,14 @@ pub fn need_env(name string) ?string {
 	return res
 }
 
+// need_exe ensures the presence of the requested executable.
+// return the absolute path to the executable or terminate the program execution.
+pub fn need_exe(name string) string {
+	return os.find_abs_path_of_executable(name) or {
+		catch(ups.item_not_found_error('executable', name))
+	}
+}
+
 // catch will print the error message and exit with the error code.
 [noreturn]
 pub fn catch(err IError) {
