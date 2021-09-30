@@ -18,34 +18,46 @@ pub fn brace_mirror(base string, bracer string) string {
 
 // digits extract the numeric characters from a string.
 pub fn digits(base string) string {
-	mut buf := buffer.cap(base.len)
+	mut buf := []byte{cap: base.len}
 	for c in base {
 		if c.is_digit() {
 			buf << c
 		}
 	}
-	return buf.str()
+	return buf.bytestr()
 }
 
 // grow append the necessary spaces to the end of the provided
 // string until the length match the specified size.
 pub fn grow(base string, size int) string {
 	if size > base.len {
-		return base + repeat(` `, size - base.len)
+		unsafe {
+			gap := size - base.len
+			buf := malloc(size)
+			vmemcpy(buf, base.str, base.len)
+			vmemset(buf + base.len, 0x20, gap)
+			return buf.vstring_with_len(size)
+		}
 	}
 	return base
 }
 
-// grow append the necessary spaces to the beginning
-// of `str` to match the specified size
+// grow_left append the necessary spaces to the beginning of the
+// provided string until the length match the specified size.
 pub fn grow_left(base string, size int) string {
 	if size > base.len {
-		return repeat(` `, size - base.len) + base
+		unsafe {
+			gap := size - base.len
+			buf := malloc(size)
+			vmemset(buf, 0x20, gap)
+			vmemcpy(buf + gap, base.str, base.len)
+			return buf.vstring_with_len(size)
+		}
 	}
 	return base
 }
 
-// key_value extract a key-value pair from a string
+// key_value extract a key-value pair from a string.
 pub fn key_value(base string, delim string) (string, string) {
 	pts := base.split_nth(delim, 2)
 	key := pts[0] or { '' }
@@ -53,12 +65,33 @@ pub fn key_value(base string, delim string) (string, string) {
 	return key, val
 }
 
+// lines extract the lines from a string, trimming white spaces
+// and skipping empty lines.
+pub fn lines(base string) []string {
+	mut res := []string{}
+	mut buf := buffer.cap(base.len)
+	for c in base {
+		if c == `\n` {
+			lin := buf.strip()
+			if lin.len > 0 {
+				res << lin
+			}
+		} else {
+			buf << c
+		}
+	}
+	lin := buf.strip()
+	if lin.len > 0 {
+		res << lin
+	}
+	return res
+}
+
 // mirror will reverse the base string, also mirroring any
 // supported character.
-// @example mirror('[[E') --> 'E]]'
 [direct_array_access]
 pub fn mirror(base string) string {
-	mut buf := buffer.cap(base.len)
+	mut buf := []byte{cap: base.len}
 	for i := base.len - 1; i >= 0; i-- {
 		c := base[i]
 		if c in str.braces_b {
@@ -67,23 +100,41 @@ pub fn mirror(base string) string {
 			buf << c
 		}
 	}
-	return buf.str()
+	return buf.bytestr()
 }
 
-// quote surround the provided string in double quotes.
+// quote will surround the provided string in double quotes.
 pub fn quote(base string) string {
 	return brace(base, '"')
 }
 
-// single_quote surround the provided string in single quotes.
+// single_quote will surround the provided string in single quotes.
 pub fn single_quote(base string) string {
 	return brace(base, "'")
+}
+
+// safe_quote will surround the provided string in double quotes
+// if it contains spaces, escaping the already existing double quotes.
+pub fn safe_quote(base string) string {
+	if base.contains(' ') {
+		return quote(base.replace('"', r'\"'))
+	}
+	return base
+}
+
+// safe_single_quote will surround the provided string in single quotes
+// if it contains spaces, escaping the already existing single quotes.
+pub fn safe_single_quote(base string) string {
+	if base.contains(' ') {
+		return single_quote(base.replace("'", r"\'"))
+	}
+	return base
 }
 
 // repeat create a string with len n only containing the
 // character c.
 pub fn repeat(c byte, n int) string {
-	if _unlikely_(n < 1) {
+	if _unlikely_(n < 1 || c < 1) {
 		return ''
 	}
 	unsafe {
@@ -99,7 +150,7 @@ pub fn repeat_str(base string, n int) string {
 		return ''
 	}
 	len := base.len * n
-	buf := unsafe { &byte(malloc(len)) }
+	buf := unsafe { malloc(len) }
 	mut ptr := buf
 	for _ in 0 .. n {
 		unsafe {
@@ -110,26 +161,21 @@ pub fn repeat_str(base string, n int) string {
 	return unsafe { buf.vstring_with_len(len) }
 }
 
-// safe_quote return the provided string inside quotes if contains spaces.
-pub fn safe_quote(base string) string {
-	if base.contains(' ') {
-		return brace(base.replace('"', r'\"'), '"')
-	}
-	return base
-}
-
 // space return the base string with one space between every character.
 pub fn space(base string) string {
 	if base.len < 1 {
 		return ''
 	}
-	mut res := []byte{cap: base.len * 2}
-	for c in base {
-		res << c
-		res << ` `
+	len := base.len * 2
+	unsafe {
+		mut buf := malloc(len)
+		for i in 0 .. base.len {
+			ix := i * 2
+			buf[ix] = base[i]
+			buf[ix + 1] = ` `
+		}
+		return buf.vstring_with_len(len - 1)
 	}
-	res.trim(res.len - 1)
-	return res.bytestr()
 }
 
 // words extract the words from a string.
