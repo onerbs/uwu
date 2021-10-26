@@ -16,7 +16,7 @@ pub:
 	alias rune
 	item  string
 	wide  bool
-pub mut:
+mut:
 	value string
 }
 
@@ -27,6 +27,10 @@ pub:
 	kind FlagKind [required]
 mut:
 	metro &int = 0
+}
+
+pub fn (self &Flag) string() string {
+	return self.value
 }
 
 pub fn (self &Flag) bool() bool {
