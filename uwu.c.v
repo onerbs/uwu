@@ -211,7 +211,7 @@ fn fwrite(path string, mode string, data &byte, len int) ?int {
 	size := int(C.fwrite(data, 1, len, fp))
 	if size < len {
 		$if debug {
-			eprintln(tag.yellow('info') + ' size: $size; len: $len')
+			eprintln(tag.err('info', .yellow) + ' size: $size; len: $len')
 		}
 		ups.cannot('write to', path) ?
 	}
