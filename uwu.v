@@ -2,7 +2,7 @@ module uwu
 
 import uwu.ups
 import uwu.tag
-
+import uwu.buffer
 import os
 
 // get_args return the command-line arguments.
@@ -54,13 +54,16 @@ fn get_exe_name(base string) string {
 	return base
 }
 
+// alert will print the error message.
+[if debug]
+pub fn alert(err IError) {
+	report(tag.err('Alert', .orange), err)
+}
+
 // catch will print the error message and exit with the error code.
 [noreturn]
 pub fn catch(err IError) {
-	if err.code != 0 {
-		eprint(tag.fail('Error') + ' ')
-	}
-	eprintln(err.msg)
+	report(tag.err('Error', .red), err)
 	exit(err.code)
 }
 
@@ -68,4 +71,17 @@ pub fn catch(err IError) {
 [noreturn]
 pub fn die(msg string) {
 	catch(error_with_code(msg, 2))
+}
+
+fn report(tag string, err IError) {
+	mut buf := buffer.cap(0x100)
+	if err.code != 0 {
+		buf.write(tag)
+		buf << ` `
+	}
+	buf.write(err.msg)
+	if buf.last() != `.` {
+		buf << `.`
+	}
+	eprintln(buf.str())
 }
