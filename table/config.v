@@ -1,22 +1,26 @@
 module table
 
+[noinit]
 pub struct TableConfig {
 	rd  string = '\n' // The row delimiter
 	cd  string = ':' // The cell delimiter
-	gap byte   = 2
+	gap u8     = 2
 }
 
 // config create a `Table` with the specified configuration.
+[inline]
 pub fn config(self TableConfig) TableConfig {
 	return self
 }
 
 // source create a `Table` from a string.
+[inline]
 pub fn (self TableConfig) source(src string) Table {
 	return self.lines(src.split(self.rd))
 }
 
 // lines create a `Table` from a list of lines.
+[inline]
 pub fn (self TableConfig) lines(src []string) Table {
 	return self.matrix(src.map(it.split(self.cd)))
 }
