@@ -1,46 +1,68 @@
 module ups
 
-pub fn cannot(act string, target string) ? {
-	throw(cannot_operate_error(act, target)) ?
+import uwu.str
+
+[inline]
+pub fn cannot(verb string, target string) IError {
+	nam := highlight(target)
+	return raise('could not ${verb} ${nam}')
 }
 
-pub fn invalid(kind string, value string) ? {
-	throw(invalid_item_error(kind, value)) ?
+[inline]
+pub fn invalid(kind string, value string) IError {
+	val := highlight(str.quote(value))
+	return raise('invalid ${kind} ${val}')
 }
 
-pub fn missing(kind string, name string) ? {
-	throw(missing_item_error(kind, name)) ?
+[inline]
+pub fn missing(kind string, name string) IError {
+	nam := highlight(name)
+	return raise('missing ${kind} ${nam}')
 }
 
-pub fn missing_value(kind string, name string) ? {
-	throw(missing_value_error(kind, name)) ?
+[inline]
+pub fn missing_value(kind string, name string) IError {
+	nam := highlight(str.quote(name))
+	return raise('the ${kind} ${nam} has no value')
 }
 
-pub fn not_enough(kind string, min int, value int) ? {
-	throw(not_enough_items_error(kind, min, value)) ?
+[inline]
+pub fn not_enough(kind string, min int, value int) IError {
+	val := highlight(value.str())
+	return raise('not enough ${kind}: expecting at least ${min}, got ${val}')
 }
 
-pub fn not_found(kind string, name string) ? {
-	throw(item_not_found_error(kind, name)) ?
+[inline]
+pub fn not_found(kind string, name string) IError {
+	nam := highlight(str.brace(name, '`'))
+	return raise('the ${kind} ${nam} was not found')
 }
 
-pub fn too_many(kind string, max int, value int) ? {
-	throw(too_many_items_error(kind, max, value)) ?
+[inline]
+pub fn too_many(kind string, max int, value int) IError {
+	val := highlight(value.str())
+	return raise('too many ${kind}: expecting less than ${max}, got ${val}')
 }
 
-pub fn unexpected(value string, kind string) ? {
-	throw(unexpected_item_error(value, kind)) ?
+[inline]
+pub fn unexpected(kind string, value string) IError {
+	val := highlight(str.brace(value, '`'))
+	return raise('unexpected value ${val}, expecting ${kind}')
 }
 
-pub fn unknown(kind string, value string) ? {
-	throw(unknown_item_error(kind, value)) ?
-}
-
-fn throw(err IError) ? {
-	return error_with_code(err.msg, err.code)
+[inline]
+pub fn unknown(kind string, value string) IError {
+	val := highlight(str.quote(value))
+	return raise('unknown ${kind} ${val}')
 }
 
 // raise returns an error with code `1`
-pub fn raise(msg string) ? {
+[inline]
+pub fn raise(msg string) IError {
 	return error_with_code(msg, 1)
+}
+
+[inline]
+fn highlight(str string) string {
+	return '\e[1m${str}\e[0m'
 }
