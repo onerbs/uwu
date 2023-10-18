@@ -2,10 +2,12 @@ module flag
 
 pub fn got(mut args []string, flags ...string) bool {
 	for f in flags {
-		if f in args {
-			args.delete(args.index(f))
-			return true
+		ix := args.index(f)
+		if ix < 0 {
+			continue
 		}
+		args.delete(ix)
+		return true
 	}
 	return false
 }
@@ -28,7 +30,9 @@ pub fn get(mut args []string, flags ...string) ?string {
 pub fn get_all(mut args []string, flags ...string) ?[]string {
 	for f in flags {
 		index := args.index(f)
-		if index < 0 { continue }
+		if index < 0 {
+			continue
+		}
 		if index + 1 == args.len {
 			args.trim(index)
 			break
@@ -38,4 +42,10 @@ pub fn get_all(mut args []string, flags ...string) ?[]string {
 		return value
 	}
 	return none
+}
+
+// should_read_stdin will return true if the last item in `args` is `"-"`.
+[direct_array_access]
+pub fn should_read_stdin(args []string) bool {
+	return args > 0 && args[args.len - 1].len == 1 && args[args.len - 1][0] == `-`
 }
