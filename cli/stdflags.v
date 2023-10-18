@@ -33,9 +33,7 @@ pub const (
 )
 
 // bool_flag create a new boolean flag
-fn bool_flag(ft FlagType) &Flag {
-	return &Flag{
-		FlagType: ft
-		kind: .bool
-	}
+[inline]
+fn bool_flag(ft FlagConfig) Flag {
+	return new_flag(ft, .bool)
 }

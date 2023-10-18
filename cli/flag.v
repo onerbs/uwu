@@ -2,61 +2,95 @@ module cli
 
 import uwu.ups
 
-enum FlagKind {
+pub enum FlagKind {
 	bool
 	// float
 	int
-	string
+	text
 }
 
-pub struct FlagType {
-pub:
-	brief string
+[params]
+pub struct FlagConfig {
 	name  string
 	alias rune
+	brief string
 	item  string
 	wide  bool
-mut:
+pub mut:
 	value string
 }
 
-[heap]
+[heap; noinit]
 pub struct Flag {
-	FlagType
-pub:
+	FlagConfig
 	kind FlagKind [required]
 mut:
-	metro &int = 0
+	metro &int = unsafe { 0 }
 }
 
-pub fn (self &Flag) string() string {
-	return self.value
+fn new_flag(cfg FlagConfig, kind FlagKind) Flag {
+	if cfg.alias == 0 && cfg.name.len < 1 {
+		panic('FatalError: Every flag requires either a name or an alias.')
+	}
+	return Flag{
+		FlagConfig: cfg
+		kind: kind
+	}
 }
 
-pub fn (self &Flag) bool() bool {
-	return self.value == 'true'
+type FlagId = rune | string
+
+fn (self Flag) get_id() FlagId {
+	if self.name.len > 0 {
+		return self.name
+	}
+	return self.alias
 }
 
-// pub fn (self &Flag) f64() f64 {
+const falsy_strings = ['false', '0', 'off', 'no', '']
+
+// bool return the value as a boolean.
+pub fn (self Flag) bool_value() bool {
+	return !cli.falsy_strings.contains(self.value.to_lower())
+}
+
+// // float return the value as a number.
+// pub fn (self Flag) float() f64 {
 // 	return self.value.f64()
 // }
 
-pub fn (self &Flag) int() int {
+// int return the value as an integer.
+[inline]
+pub fn (self Flag) int_value() int {
 	return self.value.int()
 }
 
-pub fn (ary []&Flag) get(id string) ?&Flag {
-	for flag in ary {
-		if id.len == 1 {
-			if flag.alias == id[0] {
-				return flag
-			}
-		} else {
-			if flag.name == id {
-				return flag
-			}
+// value return the value as string.
+[inline]
+pub fn (self Flag) value() string {
+	return self.value.clone()
+}
+
+// -----------------
+
+// find_flag_by_name return the flag with the specified name.
+[direct_array_access]
+pub fn (self App) find_flag_by_name(name string) !&Flag {
+	for flag in self.flags {
+		if flag.name == name {
+			return flag
 		}
 	}
-	ups.unknown('flag', id) ?
-	return none // unreachable.
+	return ups.unknown('flag', name)
+}
+
+// find_flag_by_alias return the flag with the specified alias.
+[direct_array_access]
+pub fn (self App) find_flag_by_alias(alias rune) !&Flag {
+	for flag in self.flags {
+		if flag.alias == alias {
+			return flag
+		}
+	}
+	return ups.unknown('flag', '-${alias}')
 }

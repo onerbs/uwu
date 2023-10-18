@@ -1,36 +1,47 @@
 import uwu.cli
 import uwu
 
-fn play() ? {
+fn play() ! {
 	mut app := cli.new_app(
 		brief: 'A demo app using the `uwu.cli` module'
-		item: 'item'
-		// is_optional: true
+		with_stdin: false
 		notes: [
 			'This is a sample note',
 		]
+		author: 'Alejandro Elí <dev@onerbs.com>'
 	)
 
-	// flag_m :=
-	app.flag(
+	m_flag := app.flag(
 		brief: 'A dummy flag that captures one value'
+		name: 'dummy'
 		alias: `m`
-		value: 'dummy'
+		value: 'dummy value'
 	)
-	// flag_s :=
-	app.int_flag(
+	t_flag := app.int_flag(
 		brief: 'A dummy flag that captures an integer'
-		alias: `s`
-		name: 'size'
-		item: 'value'
-		value: '5'
+		name: 'time'
+		alias: `t`
+		item: 'minutes'
+	)
+	w_flag := app.flag(
+		brief: 'some wide flag'
+		alias: `w`
+		wide: true
 	)
 
-	app.parse() ?
+	app.parse_args(['-t', '3', 'ahoy', '-w', 'a', 'b', 'c', '-m', 'd'])!
+	// app.parse_args(['-h'])!
 
-	println(*app)
+	println('${t_flag}')
+	println('args: ${app.get_args()}')
+	println('comm: ${m_flag.value()}')
+	println('some: ${t_flag.int_value()}')
+	println('wide: ${w_flag.bool_value()}')
+	println(app)
 }
 
 fn main() {
-	play() or { uwu.catch(err) }
+	play() or {
+		uwu.catch(err)
+	}
 }
