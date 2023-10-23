@@ -1,6 +1,6 @@
 module table
 
-[noinit]
+[params]
 pub struct TableConfig {
 	rd  string = '\n' // The row delimiter
 	cd  string = ':' // The cell delimiter
