@@ -33,3 +33,8 @@ fn test_get_all() {
 	assert ['ahoy', 'argument'] == flag.get_all(mut args, '-d', '--dir') or { ['fall'] }
 	assert args == ['some']
 }
+
+fn test_should_read_stdin() {
+	assert flag.should_read_stdin(['some', '-'])
+	assert !flag.should_read_stdin(['some', '-', '3'])
+}

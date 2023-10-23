@@ -44,8 +44,8 @@ pub fn get_all(mut args []string, flags ...string) ?[]string {
 	return none
 }
 
-// should_read_stdin will return true if the last item in `args` is `"-"`.
-[direct_array_access]
+// should_read_stdin will return `true` if the last item in `args` is a dash.
+[inline; direct_array_access]
 pub fn should_read_stdin(args []string) bool {
-	return args > 0 && args[args.len - 1].len == 1 && args[args.len - 1][0] == `-`
+	return args.len > 0 && args[args.len - 1] == '-'
 }
