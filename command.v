@@ -4,7 +4,6 @@ import uwu.str
 import uwu.ups
 import os
 
-[noinit]
 pub struct Command {
 	base string
 }
@@ -27,17 +26,17 @@ pub fn need_command(cmd string) Command {
 }
 
 // sub create a new Command instance based on the current.
+[inline]
 pub fn (self Command) sub(cmd string) Command {
-	base := '${self.base} ${cmd}'
-	return Command{base}
+	return Command{base: '${self.base} ${cmd}'}
 }
 
 // -----------------
 
-// run will call the executable with the provided arguments,
+// call will call the executable with the provided arguments,
 // capture and return the output.
 // this will return an error if the execution fails.
-pub fn (self Command) run(args ...string) !string {
+pub fn (self Command) call(args ...string) !string {
 	cmd := self.get_cmd(...args)
 	$if vv ? {
 		eprintln(@FN + ': ' + cmd)
@@ -50,16 +49,8 @@ pub fn (self Command) run(args ...string) !string {
 	return out
 }
 
-// get will call the executable with the provided arguments,
-// capture and return the output.
-// this will return an empty string if the execution fails.
-[inline]
-pub fn (self Command) get(cmd ...string) string {
-	return self.run(...cmd) or { '' }
-}
-
 // get_cmd compose and returns the complete command as string.
-pub fn (self Command) get_cmd(args ...string) string {
+fn (self Command) get_cmd(args ...string) string {
 	mut all := []string{}
 	all << self.base
 	all << args
