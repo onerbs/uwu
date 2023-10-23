@@ -63,6 +63,6 @@ pub fn raise(msg string) IError {
 }
 
 [inline]
-fn highlight(str string) string {
-	return '\e[1m${str}\e[0m'
+fn highlight(s string) string {
+	return '\x1b[1m${s}\x1b[0m'
 }
