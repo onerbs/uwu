@@ -13,11 +13,10 @@ pub fn get_args() []string {
 // the number of command-line arguments to the program.
 pub fn need_args(min int) ![]string {
 	args := get_args()
-
-	if args.len < min {
-		return ups.not_enough('arguments', min, args.len)
+	argc := args.find(!it.starts_with('-')).len
+	if argc < min {
+		return ups.not_enough('arguments', min, argc)
 	}
-
 	return args
 }
 
@@ -25,8 +24,8 @@ pub fn need_args(min int) ![]string {
 [inline]
 pub fn system(cmd string) int {
 	$if windows {
-		return os.system(cmd + ' >NUL 2>NUL')
+		return os.system('${cmd} >NUL 2>NUL')
 	} $else {
-		return os.system(cmd + ' >/dev/null 2>&1')
+		return os.system('${cmd} >/dev/null 2>&1')
 	}
 }

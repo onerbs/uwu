@@ -15,6 +15,7 @@ pub struct File {
 	file &C.FILE
 }
 
+[inline]
 fn wrap_file(file &C.FILE) File {
 	return unsafe { File{file} }
 }
@@ -46,12 +47,6 @@ pub fn (self File) rewind() {
 }
 
 [inline]
-pub fn (self File) put(lines ...string) {
-	msg := lines.join('\n')
-	C.fprintf(self.file, &char(msg.str))
-}
-
-[inline]
 pub fn (self File) close() bool {
 	return C.fclose(self.file) == 0
 }
@@ -61,7 +56,7 @@ pub fn (self File) close() bool {
 [inline]
 pub fn (self File) next() ?u8 {
 	byt := C.fgetc(self.file)
-	if byt < 1 {
+	if byt < 0 {
 		return none
 	}
 	return u8(byt)
