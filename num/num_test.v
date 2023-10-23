@@ -21,13 +21,13 @@ fn test_mm_int() {
 }
 
 fn test_mm_of_int() {
-	assert num.min_of([0, 4]) == 0
-	assert num.min_of([4, 6]) == 4
-	assert num.min_of([6, 2]) == 2
+	assert num.min_of([0, 4, 8]) == 0
+	assert num.min_of([4, 6, 6, 5]) == 4
+	assert num.min_of([6, 2, 8, 2, 10]) == 2
 
-	assert num.max_of([0, 4]) == 4
-	assert num.max_of([4, 6]) == 6
-	assert num.max_of([6, 2]) == 6
+	assert num.max_of([0, 4, 8]) == 8
+	assert num.max_of([4, 6, 6, 5]) == 6
+	assert num.max_of([6, 2, 8, 2, 10]) == 10
 }
 
 fn test_mm_float() {
@@ -50,10 +50,10 @@ fn test_mm_of_float() {
 	assert num.max_of([6.5, 2.3]) == 6.5
 }
 
-fn test_strict() {
-	assert num.strict(4, 0, 9) == 4
-	assert num.strict(0, 4, 9) == 4
-	assert num.strict(9, 0, 4) == 4
+fn test_within() {
+	assert num.within(4, 0, 9) == 4
+	assert num.within(0, 4, 9) == 4
+	assert num.within(9, 0, 4) == 4
 }
 
 fn test_wrap() {
