@@ -29,14 +29,18 @@ fn play() ! {
 		wide: true
 	)
 
-	app.parse_args(['-t', '3', 'ahoy', '-w', 'a', 'b', 'c', '-m', 'd'])!
-	// app.parse_args(['-h'])!
+	app.parse_args(['-t', '3', 'ahoy', '-m', 'my message', 'b', 'c', '-w', 'd', 'e'])!
 
-	println('${t_flag}')
+	assert app.get_args() == ['ahoy', 'b', 'c']
+	assert t_flag.int_value() == 3
+	assert m_flag.value() == 'my message'
+	assert w_flag.values() == ['d', 'e']
+
 	println('args: ${app.get_args()}')
-	println('comm: ${m_flag.value()}')
-	println('some: ${t_flag.int_value()}')
-	println('wide: ${w_flag.bool_value()}')
+	println('-m: ${m_flag.value()}')
+	println('-t: ${t_flag.int_value()}')
+	println('-w: ${w_flag.values()}')
+	println('${*t_flag}')
 	println(app)
 }
 

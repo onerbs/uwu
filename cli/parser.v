@@ -40,12 +40,12 @@ pub fn (mut self App) parse_args(args []string) ! {
 		it := args[i]
 		match it {
 			'-' {
-				if self.with_stdin {
+				if args.len - 1 == i && self.with_stdin {
 					self.input = uwu.get_text()
+					break
 				} else {
 					self.args << it
 				}
-				i--
 			}
 			'--' {
 				self.args << args[i + 1..]
@@ -76,7 +76,7 @@ fn (mut self App) parse_long_flag(name string, args []string, index int) !int {
 		return error(self.version())
 	}
 
-	mut flag := self.find_flag_by_name(name)!
+	mut flag := self.find_flag(name)!
 
 	if flag.kind != .bool {
 		if i + 1 >= args.len {
@@ -87,17 +87,27 @@ fn (mut self App) parse_long_flag(name string, args []string, index int) !int {
 	match flag.kind {
 		.bool {
 			flag.value = 'true'
-			// continue
 		}
 		.int {
-			value := args[i]
-			if !is_numeric(value) {
-				return ups.unexpected(value, 'an integer')
+			val := args[i]
+			if !is_numeric(val) {
+				return ups.unexpected(val, 'an integer')
 			}
+			flag.value = val
 		}
 		// TODO .float {}
 		.text {
-			flag.value = args[i]
+			if flag.wide {
+				flag.value = args[i..].join(';')
+				i = args.len
+			} else {
+				// try to unquote...
+				mut val := args[i]
+				if val.starts_with('"') && val.ends_with('"') {
+					val = val[1..val.len - 2]
+				}
+				flag.value = val
+			}
 		}
 	}
 	return i
@@ -112,7 +122,7 @@ fn (mut self App) parse_short_flag(alias rune, args []string, index int) !int {
 		return error(self.version())
 	}
 
-	mut flag := self.find_flag_by_alias(alias)!
+	mut flag := self.find_flag('${alias}')!
 
 	if flag.kind != .bool {
 		if i + 1 >= args.len {
@@ -124,17 +134,27 @@ fn (mut self App) parse_short_flag(alias rune, args []string, index int) !int {
 	match flag.kind {
 		.bool {
 			flag.value = 'true'
-			// continue
 		}
 		.int {
-			value := args[i]
-			if !is_numeric(value) {
-				return ups.unexpected(value, 'an integer')
+			val := args[i]
+			if !is_numeric(val) {
+				return ups.unexpected(val, 'an integer')
 			}
+			flag.value = val
 		}
 		// TODO .float {}
 		.text {
-			flag.value = args[i]
+			if flag.wide {
+				flag.value = args[i..].join(';')
+				i = args.len
+			} else {
+				// try to unquote...
+				mut val := args[i]
+				if val.starts_with('"') && val.ends_with('"') {
+					val = val[1..val.len - 2]
+				}
+				flag.value = val
+			}
 		}
 	}
 	return i

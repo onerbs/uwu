@@ -34,6 +34,6 @@ pub const (
 
 // bool_flag create a new boolean flag
 [inline]
-fn bool_flag(ft FlagConfig) Flag {
-	return new_flag(ft, .bool)
+fn bool_flag(cfg FlagConfig) Flag {
+	return new_flag(cfg, .bool)
 }

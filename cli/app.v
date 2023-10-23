@@ -15,7 +15,7 @@ mut:
 	notes     []string
 }
 
-[noinit]
+[heap; noinit]
 pub struct App {
 	AppConfig
 mut:
@@ -53,6 +53,7 @@ pub fn (self App) get_args() []string {
 }
 
 // get_input return the content of the standard input.
+[inline]
 pub fn (self App) get_input() string {
 	if self.with_stdin {
 		return self.input.clone()
@@ -69,26 +70,29 @@ pub fn (self App) get_lines() []string {
 // ----------------- Flags
 
 // flag create and push a flag with value.
-pub fn (mut self App) flag(cfg FlagConfig) Flag {
-	mut f := new_flag(cfg, .text)
-	return self.push_flag(mut f)
+[inline]
+pub fn (mut self App) flag(cfg FlagConfig) &Flag {
+	mut flag := new_flag(cfg, .text)
+	return self.push_flag(mut flag)
 }
 
 // bool_flag create and push a boolean flag.
-pub fn (mut self App) bool_flag(cfg FlagConfig) Flag {
-	mut f := new_flag(cfg, .bool)
-	return self.push_flag(mut f)
+[inline]
+pub fn (mut self App) bool_flag(cfg FlagConfig) &Flag {
+	mut flag := new_flag(cfg, .bool)
+	return self.push_flag(mut flag)
 }
 
 // int_flag create and push a flag with numeric value.
-pub fn (mut self App) int_flag(cfg FlagConfig) Flag {
-	mut f := new_flag(cfg, .int)
-	return self.push_flag(mut f)
+[inline]
+pub fn (mut self App) int_flag(cfg FlagConfig) &Flag {
+	mut flag := new_flag(cfg, .int)
+	return self.push_flag(mut flag)
 }
 
 // push_flag sets the flag metro and pus it into the application flags.
 // fixme: return an error on overlapping identifiers.
-fn (mut self App) push_flag(mut flag Flag) Flag {
+fn (mut self App) push_flag(mut flag Flag) &Flag {
 	self.validate(flag) or { panic(err.msg()) }
 	flag.metro = &self.metro
 	self.flags << flag
@@ -98,10 +102,10 @@ fn (mut self App) push_flag(mut flag Flag) Flag {
 fn (self App) validate(target Flag) ! {
 	for flag in self.flags {
 		if target.alias > 0 && target.alias == flag.alias {
-			return error('the "-${flag.alias}" flag is taken.')
+			return error_with_code('the "-${flag.alias}" flag is taken.', 3)
 		}
 		if target.name.len > 0 && target.name == flag.name {
-			return error('the "--${flag.name}" flag is taken.')
+			return error_with_code('the "--${flag.name}" flag is taken.', 3)
 		}
 	}
 }
