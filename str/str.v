@@ -1,30 +1,41 @@
 module str
 
-import uwu.buffer
+// Unicode codepoint of the «space» (` `) character.
+const byt_space = u8(` `)
+
+// Unicode codepoint of the «newline» (`\n`) character.
+const byt_newline = u8(`\n`)
 
 // brace will surround the base string in a brace pair or
 // place a bracer at the end and another at the beginning
 // of the base string.
-pub fn brace(s string, bracer string) string {
-	pair := str.braces_s[bracer] or { bracer }
-	return '${bracer}${s}${pair}'
+[inline]
+pub fn brace(s string, left string) string {
+	right := str.str_pairs[left] or { left }
+	return '${left}${s}${right}'
 }
 
 // brace will surround the base string into.
-pub fn brace_mirror(s string, bracer string) string {
-	pair := mirror(bracer)
-	return '${bracer}${s}${pair}'
+[inline]
+pub fn brace_mirror(s string, left string) string {
+	return '${left}${s}${mirror(left)}'
 }
 
 // digits extract the numeric characters from a string.
+[direct_array_access]
 pub fn digits(s string) string {
-	mut buf := buffer.cap(s.len)
-	for c in s {
-		if c.is_digit() {
-			buf << c
+	mut buf := []u8{}
+	for byt in s {
+		if byt.is_digit() {
+			buf << u8(byt)
 		}
 	}
-	return buf.str()
+	if buf.len > 0 {
+		unsafe {
+			return buf[0].vstring_with_len(buf.len)
+		}
+	}
+	return ''
 }
 
 // grow append the necessary spaces to the end of the provided
@@ -37,7 +48,7 @@ pub fn grow(s string, size int) string {
 	unsafe {
 		buf := &u8(malloc(size))
 		vmemcpy(buf, s.str, s.len)
-		vmemset(buf + s.len, 0x20, gap)
+		vmemset(buf + s.len, str.byt_space, gap)
 		return buf.vstring_with_len(size)
 	}
 }
@@ -51,38 +62,49 @@ pub fn grow_left(s string, size int) string {
 	gap := size - s.len
 	unsafe {
 		buf := &u8(malloc(size))
-		vmemset(buf, 0x20, gap)
+		vmemset(buf, str.byt_space, gap)
 		vmemcpy(buf + gap, s.str, s.len)
 		return buf.vstring_with_len(size)
 	}
 }
 
 // key_value extract a key-value pair from a string.
-pub fn key_value(s string, delimiter string) (string, string) {
-	pts := s.split_nth(delimiter, 2)
-	key := pts[0] or { '' }
-	val := pts[1] or { '' }
-	return key, val
+[inline]
+pub fn key_value(s string, delim string) (string, string) {
+	if s.contains(delim) {
+		key := s.all_before(delim)
+		val := s.all_after(delim)
+		return key, val
+	}
+	return s, ''
 }
 
 // lines extract the lines from a string, trimming white spaces
 // and skipping empty lines.
+[direct_array_access]
 pub fn lines(s string) []string {
-	mut buf := buffer.cap(s.len)
+	mut buf := []u8{}
 	mut res := []string{}
-	for c in s {
-		if c == `\n` {
-			lin := buf.strip()
-			if lin.len > 0 {
-				res << lin
+	for byt in s {
+		match byt {
+			`\r` {}
+			str.byt_newline {
+				if buf.len > 0 {
+					unsafe {
+						res << buf[0].vstring_with_len(buf.len)
+						buf.trim(0)
+					}
+				}
 			}
-		} else {
-			buf << c
+			else {
+				buf << u8(byt)
+			}
 		}
 	}
-	lin := buf.strip()
-	if lin.len > 0 {
-		res << lin
+	if buf.len > 0 {
+		unsafe {
+			res << buf[0].vstring_with_len(buf.len)
+		}
 	}
 	return res
 }
@@ -91,44 +113,63 @@ pub fn lines(s string) []string {
 // supported character.
 [direct_array_access]
 pub fn mirror(s string) string {
-	mut buf := buffer.cap(s.len)
+	mut buf := []u8{}
 	for i := s.len - 1; i >= 0; i-- {
-		c := s[i]
-		if c in str.braces_b {
-			buf << str.braces_b[c]
-		} else {
-			buf << c
+		byt := u8(s[i])
+		chr := str.byt_pairs[byt] or { byt }
+		buf << chr
+	}
+	if buf.len > 0 {
+		unsafe {
+			return buf[0].vstring_with_len(buf.len)
 		}
 	}
-	return buf.str()
+	return ''
 }
 
 // quote will surround the provided string in double quotes.
-pub fn quote(base string) string {
-	return brace(base, '"')
+[inline]
+pub fn quote(s string) string {
+	return brace(s, '"')
 }
 
 // single_quote will surround the provided string in single quotes.
-pub fn single_quote(base string) string {
-	return brace(base, "'")
+[inline]
+pub fn single_quote(s string) string {
+	return brace(s, "'")
 }
 
 // safe_quote will surround the provided string in double quotes
 // if it contains spaces, escaping the already existing double quotes.
-pub fn safe_quote(base string) string {
-	if base.contains(' ') {
-		return quote(base.replace('"', r'\"'))
+[inline]
+pub fn safe_quote(s string) string {
+	if s.contains(' ') && !is_quoted(s) {
+		if s.contains('"') {
+			return single_quote(s)
+		}
+		return quote(s)
 	}
-	return base
+	return s
 }
 
-// safe_single_quote will surround the provided string in single quotes
-// if it contains spaces, escaping the already existing single quotes.
-pub fn safe_single_quote(base string) string {
-	if base.contains(' ') {
-		return single_quote(base.replace("'", r"\'"))
+[inline]
+pub fn unquote(s string) string {
+	val := s.trim_space()
+	if is_quoted(val) {
+		tmp := rune(val[0])
+		return s.replace('${tmp}', '')
 	}
-	return base
+	return s
+}
+
+// the quotation characters.
+const quote_chars = [`'`, `"`, `\``]
+
+// is_quoted tells whether the provided string is surrounded by quotes.
+[direct_array_access; inline]
+pub fn is_quoted(s string) bool {
+	val := s.trim_space()
+	return val.len > 1 && val[0] == val[val.len - 1] && str.quote_chars.contains(val[0])
 }
 
 // repeat create a string with len n only containing the
@@ -139,8 +180,7 @@ pub fn repeat(c u8, n int) string {
 	}
 	unsafe {
 		buf := &u8(malloc(n + 1))
-		buf[n] = 0
-		assert !isnil(vmemset(buf, c, n))
+		vmemset(buf, c, n)
 		return buf.vstring_with_len(n)
 	}
 }
@@ -153,10 +193,9 @@ pub fn repeat_str(s string, n int) string {
 	unsafe {
 		buf := &u8(malloc(len + 1))
 		for _ in 0 .. n {
-			assert !isnil(vmemcpy(buf + ofs, s.str, s.len))
+			vmemcpy(buf + ofs, s.str, s.len)
 			ofs += s.len
 		}
-		buf[len] = 0
 		return buf.vstring_with_len(len)
 	}
 }
@@ -173,10 +212,9 @@ pub fn space(s string) string {
 		for c in s {
 			buf[i] = c
 			i++
-			buf[i] = ` `
+			buf[i] = str.byt_space
 			i++
 		}
-		buf[len] = 0
 		return buf.vstring_with_len(len)
 	}
 }
@@ -184,37 +222,42 @@ pub fn space(s string) string {
 // words extract the words from a string.
 // i.e. find all matches of the regular expression '\S+'.
 pub fn words(s string) []string {
-	mut buf := buffer.cap(s.len)
+	mut buf := []u8{}
 	mut res := []string{}
-	for c in s {
-		if c.is_space() {
+	for byt in s {
+		if byt.is_space() {
 			if buf.len > 0 {
-				res << buf.str()
+				unsafe {
+					res << buf[0].vstring_with_len(buf.len)
+					buf.trim(0)
+				}
 			}
 		} else {
-			buf << c
+			buf << u8(byt)
 		}
 	}
 	if buf.len > 0 {
-		res << buf.str()
+		unsafe {
+			res << buf[0].vstring_with_len(buf.len)
+		}
 	}
 	return res
 }
 
 const (
-	braces_s = {
-		'(':  ')'
-		'<':  '>'
-		'[':  ']'
-		'{':  '}'
+	str_pairs = {
+		'(': ')'
+		'<': '>'
+		'[': ']'
+		'{': '}'
 		'¡': '!'
 		'¿': '?'
 	}
-	braces_b = {
-		`(`:  `)`
-		`<`:  `>`
-		`[`:  `]`
-		`{`:  `}`
+	byt_pairs = {
+		`(`: `)`
+		`<`: `>`
+		`[`: `]`
+		`{`: `}`
 		`¡`: `!`
 		`¿`: `?`
 	}

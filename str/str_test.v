@@ -42,6 +42,10 @@ fn test_key_value() {
 	assert a == 'c'
 	assert b == 'no'
 
+	a, b = str.key_value('a:b:c:d', ':')
+	assert a == 'a'
+	assert b == 'b:c:d'
+
 	a, b = str.key_value('some', ' = ')
 	assert a == 'some'
 	assert b == ''
@@ -49,7 +53,7 @@ fn test_key_value() {
 
 fn test_lines() {
 	assert str.lines('') == []string{}
-	assert str.lines('a\nb\r\nc\n\n d  \n\n') == ['a', 'b', 'c', 'd']
+	assert str.lines('a\nb\r\nc\n\n d  \n\n.') == ['a', 'b', 'c', ' d  ', '.']
 }
 
 fn test_mirror() {
@@ -75,15 +79,31 @@ fn test_single_quote() {
 fn test_safe_quote() {
 	assert str.safe_quote('') == ''
 	assert str.safe_quote('some') == 'some'
+	assert str.safe_quote('"some"') == '"some"'
 	assert str.safe_quote('some text') == '"some text"'
-	assert str.safe_quote('some "other" text') == r'"some \"other\" text"'
+	assert str.safe_quote('"some text"') == '"some text"'
+	assert str.safe_quote('some "other" text') == '\'some "other" text\''
+	assert str.safe_quote("some 'other' text") == '"some \'other\' text"'
 }
 
-fn test_safe_single_quote() {
-	assert str.safe_single_quote('') == ''
-	assert str.safe_single_quote('some') == 'some'
-	assert str.safe_single_quote('some text') == "'some text'"
-	assert str.safe_single_quote("some 'other' text") == r"'some \'other\' text'"
+fn test_unquote() {
+	assert str.unquote(' "some text" ') == ' some text '
+	assert str.unquote('"some text"') == 'some text'
+	assert str.unquote('`some text`') == 'some text'
+	assert str.unquote("'some text'") == 'some text'
+	assert str.unquote('some text') == 'some text'
+}
+
+fn test_is_quoted() {
+	assert str.is_quoted('"ahoy"')
+	assert str.is_quoted("'ahoy'")
+	assert str.is_quoted('`ahoy`')
+	assert !str.is_quoted('ahoy')
+
+	assert str.is_quoted(' "ahoy"  ')
+	assert str.is_quoted("  'ahoy' ")
+	assert str.is_quoted('  `ahoy` ')
+	assert !str.is_quoted('  ahoy  ')
 }
 
 fn test_repeat() {
