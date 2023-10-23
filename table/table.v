@@ -1,7 +1,5 @@
 module table
 
-import uwu.buffer
-
 [noinit]
 pub struct Table {
 	data  [][]string
@@ -28,6 +26,7 @@ pub fn matrix(src [][]string) Table {
 }
 
 // str returns a string representation of this `Table`
+[inline]
 pub fn (self Table) str() string {
 	return self.lines().join_lines()
 }
@@ -35,7 +34,7 @@ pub fn (self Table) str() string {
 // lines returns the lines on this Table
 [direct_array_access]
 pub fn (self Table) lines() []string {
-	mut buf := buffer.cap(80)
+	mut buf := []u8{}
 	mut res := []string{}
 	mut pos := 0
 	mut lim := 0
@@ -43,7 +42,9 @@ pub fn (self Table) lines() []string {
 		lim = row.len - 1
 		pos = 0
 		for cell in row {
-			buf.write(cell)
+			for byt in cell {
+				buf << u8(byt)
+			}
 			if pos < lim {
 				dif := self.metro[pos] - cell.len
 				gap := self.gap + dif
@@ -53,7 +54,14 @@ pub fn (self Table) lines() []string {
 			}
 			pos++
 		}
-		res << buf.str()
+		mut val := ''
+		if buf.len > 0 {
+			unsafe {
+				val = buf[0].vstring_with_len(buf.len)
+				buf.trim(0)
+			}
+		}
+		res << val
 	}
 	return res
 }

@@ -16,6 +16,7 @@ fn test_lines() {
 	assert crea('::u::_d:e:f').lines() == ['      u', 'd  e  f']
 	assert crea('a::c_d:we:f').lines() == ['a      c', 'd  we  f']
 	assert crea('a::c:_d:we:f:').lines() == ['a      c', 'd  we  f']
+	assert crea('a::c:__d:we:f:').lines() == ['a      c', '', 'd  we  f']
 }
 
 const cfg = table.config(rd: '_')
