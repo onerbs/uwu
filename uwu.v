@@ -13,7 +13,12 @@ pub fn get_args() []string {
 // the number of command-line arguments to the program.
 pub fn need_args(min int) ![]string {
 	args := get_args()
-	argc := args.find(!it.starts_with('-')).len
+	mut argc := 0
+	for it in args {
+		if !it.starts_with('-') {
+			argc++
+		}
+	}
 	if argc < min {
 		return ups.not_enough('arguments', min, argc)
 	}
