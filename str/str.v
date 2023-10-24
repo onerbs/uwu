@@ -27,13 +27,11 @@ pub fn digits(s string) string {
 	mut buf := []u8{}
 	for byt in s {
 		if byt.is_digit() {
-			buf << u8(byt)
+			buf << byt
 		}
 	}
 	if buf.len > 0 {
-		unsafe {
-			return buf[0].vstring_with_len(buf.len)
-		}
+		return buf.bytestr()
 	}
 	return ''
 }
@@ -90,21 +88,17 @@ pub fn lines(s string) []string {
 			`\r` {}
 			str.byt_newline {
 				if buf.len > 0 {
-					unsafe {
-						res << buf[0].vstring_with_len(buf.len)
-						buf.trim(0)
-					}
+					res << buf.bytestr()
+					buf.trim(0)
 				}
 			}
 			else {
-				buf << u8(byt)
+				buf << byt
 			}
 		}
 	}
 	if buf.len > 0 {
-		unsafe {
-			res << buf[0].vstring_with_len(buf.len)
-		}
+		res << buf.bytestr()
 	}
 	return res
 }
@@ -115,14 +109,12 @@ pub fn lines(s string) []string {
 pub fn mirror(s string) string {
 	mut buf := []u8{}
 	for i := s.len - 1; i >= 0; i-- {
-		byt := u8(s[i])
+		byt := s[i]
 		chr := str.byt_pairs[byt] or { byt }
 		buf << chr
 	}
 	if buf.len > 0 {
-		unsafe {
-			return buf[0].vstring_with_len(buf.len)
-		}
+		return buf.bytestr()
 	}
 	return ''
 }
@@ -227,19 +219,15 @@ pub fn words(s string) []string {
 	for byt in s {
 		if byt.is_space() {
 			if buf.len > 0 {
-				unsafe {
-					res << buf[0].vstring_with_len(buf.len)
-					buf.trim(0)
-				}
+				res << buf.bytestr()
+				buf.trim(0)
 			}
 		} else {
-			buf << u8(byt)
+			buf << byt
 		}
 	}
 	if buf.len > 0 {
-		unsafe {
-			res << buf[0].vstring_with_len(buf.len)
-		}
+		res << buf.bytestr()
 	}
 	return res
 }
