@@ -1,0 +1,9 @@
+import uwu.style
+
+fn main() {
+	style.text('sample text')
+	style.done('sample text')
+	style.info('sample text')
+	style.warn('sample text')
+	style.fail('sample text')
+}
