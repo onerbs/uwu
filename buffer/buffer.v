@@ -6,19 +6,19 @@ const capacity = 0x400
 
 // new create a Buffer with the default capacity.
 [inline]
-pub fn new() Buffer {
-	return cap(buffer.capacity)
+pub fn Buffer.new() Buffer {
+	return Buffer.cap(buffer.capacity)
 }
 
 // cap create a Buffer with the specified capacity.
 [inline]
-pub fn cap(cap int) Buffer {
+pub fn Buffer.cap(cap int) Buffer {
 	return Buffer([]u8{cap: cap})
 }
 
 // from create a new Buffer using the data in `buf`.
 [inline]
-pub fn from(buf []u8) Buffer {
+pub fn Buffer.from(buf []u8) Buffer {
 	return Buffer(buf)
 }
 

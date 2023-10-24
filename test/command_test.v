@@ -1,7 +1,7 @@
-import uwu
+import uwu { Command }
 
 fn test_command() {
-	cmd := uwu.need_command('v')
-	out := cmd.call('-v') or { '' }
+	cmd := Command.need('v')
+	out := cmd.call('-v')!
 	assert out.len > 0
 }

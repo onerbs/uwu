@@ -15,20 +15,18 @@ pub fn from_home(dirs ...string) string {
 }
 
 // simple return the basename of the file without extension.
+[inline]
 pub fn simple(base string) string {
-	mut res := os.base(base)
-	if res.contains('.') {
-		res = res.all_before_last('.')
-	}
-	return res
+	return os.base(base).all_before_last('.')
 }
 
 // chext change the filename extension.
+[inline]
 pub fn chext(base string, next string) string {
-	mut res := base
-	if res.contains('.') {
-		res = res.all_before_last('.')
+	res := base.all_before_last('.')
+	ext := next.trim(' .')
+	if ext.len > 0 {
+		return '${res}.${ext}'
 	}
-	ext := next.trim('.')
-	return if ext.len > 0 { '${res}.${ext}' } else { res }
+	return res
 }

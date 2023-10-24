@@ -4,7 +4,7 @@ import uwu.ups
 
 [noinit]
 pub struct File {
-	ref &C.FILE
+	ref  &C.FILE
 	path string
 }
 
@@ -34,7 +34,10 @@ pub fn (self File) reopen(mode string) !File {
 	if isnil(ref) {
 		return ups.cannot('reopen file', self.path)
 	}
-	return File{...self, ref: ref}
+	return File{
+		...self
+		ref: ref
+	}
 }
 
 [inline]
@@ -61,7 +64,7 @@ pub fn (self File) next() ?u8 {
 fn C.fgetc(&C.FILE) int
 
 pub const (
-	stdin  = unsafe{ File{ref: &C.FILE(voidptr(C.stdin))} }
-	stdout = unsafe{ File{ref: &C.FILE(voidptr(C.stdout))} }
-	stderr = unsafe{ File{ref: &C.FILE(voidptr(C.stderr))} }
+	stdin  = unsafe { File{&C.FILE(voidptr(C.stdin)), ''} }
+	stdout = unsafe { File{&C.FILE(voidptr(C.stdout)), ''} }
+	stderr = unsafe { File{&C.FILE(voidptr(C.stderr)), ''} }
 )

@@ -6,7 +6,8 @@ fn test_simple() {
 }
 
 fn test_chext() {
+	assert 'some/uwu.c' == paths.chext('some/uwu.c.v', '')
 	assert 'some/uwu.c' == paths.chext('some/uwu.v', '.c')
-	assert 'some/uwu.c' == paths.chext('some/uwu', 'c')
+	assert 'some/uwu.c' == paths.chext('some/uwu', 'c ')
 	assert 'uwu.c' == paths.chext('uwu', 'c')
 }

@@ -27,25 +27,26 @@ pub fn get(mut args []string, flags ...string) ?string {
 	return none
 }
 
+[direct_array_access]
 pub fn get_all(mut args []string, flags ...string) ?[]string {
 	for f in flags {
-		index := args.index(f)
-		if index < 0 {
+		ix := args.index(f)
+		if ix < 0 {
 			continue
 		}
-		if index + 1 == args.len {
-			args.trim(index)
+		if ix + 1 == args.len {
+			args.trim(ix)
 			break
 		}
-		value := (*args)[index + 1..]
-		args.trim(index)
-		return value
+		res := (*args)[ix + 1..]
+		args.trim(ix)
+		return res
 	}
 	return none
 }
 
 // should_read_stdin will return `true` if the last item in `args` is a dash.
-[inline; direct_array_access]
+[direct_array_access; inline]
 pub fn should_read_stdin(args []string) bool {
 	return args.len > 0 && args[args.len - 1] == '-'
 }
