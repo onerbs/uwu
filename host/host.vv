@@ -1,0 +1,12 @@
+import uwu.host
+
+fn main() {
+	dump(host.user_name)
+	dump(host.user_home)
+	dump(host.user_data)
+	dump(host.user_path)
+	dump(host.app_path)
+	dump(host.app_file)
+	dump(host.app_name)
+	dump(host.app_data)
+}
