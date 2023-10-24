@@ -29,7 +29,7 @@ pub fn need_args(min int) ![]string {
 [inline]
 pub fn system(cmd string) int {
 	$if windows {
-		return os.system('${cmd} >NUL 2>NUL')
+		return os.system('${cmd} >nul 2>nul')
 	} $else {
 		return os.system('${cmd} >/dev/null 2>&1')
 	}

@@ -2,8 +2,8 @@ module uwu
 
 // write_bytes will read and return a buffer with all bytes in the source file.
 [inline]
-pub fn (self File) write_bytes(bytes []u8) {
-	C.fprintf(self.file, &char(bytes.data))
+pub fn (self File) write_bytes(dat []u8) {
+	C.fprintf(self.ref, &char(dat.data))
 }
 
 // write_text will read and return a string with the content of the source file.

@@ -2,62 +2,66 @@ module uwu
 
 import uwu.ups
 
-fn C.fgetc(&C.FILE) int
-
-pub const (
-	stdin  = unsafe { wrap_file(&C.FILE(voidptr(C.stdin))) }
-	stdout = unsafe { wrap_file(&C.FILE(voidptr(C.stdout))) }
-	stderr = unsafe { wrap_file(&C.FILE(voidptr(C.stderr))) }
-)
-
 [noinit]
 pub struct File {
-	file &C.FILE
-}
-
-[inline]
-fn wrap_file(file &C.FILE) File {
-	return unsafe { File{file} }
+	ref &C.FILE
+	path string
 }
 
 pub fn open(path string, mode string) !File {
 	if path.len < 1 {
 		return ups.invalid('path', path)
 	}
-	file := open_helper(path, mode)!
-	return wrap_file(file)
-}
-
-fn open_helper(path string, mode string) !&C.FILE {
-	mut file := &C.FILE(unsafe { nil })
+	mut ref := &C.FILE(unsafe { nil })
 	$if windows {
-		file = C._wfopen(path.to_wide(), mode.to_wide())
+		ref = C._wfopen(path.to_wide(), mode.to_wide())
 	} $else {
-		file = C.fopen(&char(path.str), &char(mode.str))
+		ref = C.fopen(&char(path.str), &char(mode.str))
 	}
-	if isnil(file) {
+	if isnil(ref) {
 		return ups.cannot('open file', path)
 	}
-	return file
+	return File{ref, path}
+}
+
+pub fn (self File) reopen(mode string) !File {
+	mut ref := &C.FILE(unsafe { nil })
+	$if windows {
+		ref = C._wfreopen(0, mode.to_wide(), self.ref)
+	} $else {
+		ref = C.freopen(0, &char(mode.str), self.ref)
+	}
+	if isnil(ref) {
+		return ups.cannot('reopen file', self.path)
+	}
+	return File{...self, ref: ref}
 }
 
 [inline]
 pub fn (self File) rewind() {
-	C.rewind(self.file)
+	C.rewind(self.ref)
 }
 
 [inline]
-pub fn (self File) close() bool {
-	return C.fclose(self.file) == 0
+pub fn (self File) close() {
+	C.fclose(self.ref)
 }
 
 // next returns the next byte from the file content.
 // this also allows File to be used as an iterator.
 [inline]
 pub fn (self File) next() ?u8 {
-	byt := C.fgetc(self.file)
+	byt := C.fgetc(self.ref)
 	if byt < 0 {
 		return none
 	}
 	return u8(byt)
 }
+
+fn C.fgetc(&C.FILE) int
+
+pub const (
+	stdin  = unsafe{ File{ref: &C.FILE(voidptr(C.stdin))} }
+	stdout = unsafe{ File{ref: &C.FILE(voidptr(C.stdout))} }
+	stderr = unsafe{ File{ref: &C.FILE(voidptr(C.stderr))} }
+)
