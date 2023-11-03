@@ -1,9 +1,9 @@
 module cli
 
-import uwu.buffer
+import uwu.buffer { Buffer }
 
-pub fn (self &Flag) str() string {
-	mut buf := buffer.cap(0x20)
+pub fn (self Flag) str() string {
+	mut buf := Buffer.cap(0x20)
 	buf.write(self.armor())
 	if self.brief.len > 0 {
 		metro := *self.metro - buf.len

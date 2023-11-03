@@ -10,16 +10,6 @@ pub const (
 		name: 'quiet'
 		alias: `q`
 	)
-	flag_debug   = bool_flag(
-		brief: 'Enable the debug mode'
-		name: 'debug'
-		alias: `D`
-	)
-	flag_verbose = bool_flag(
-		brief: 'Enable the verbose mode'
-		name: 'verbose'
-		alias: `v`
-	)
 	flag_help    = bool_flag(
 		brief: 'Print this help and exit'
 		name: 'help'
@@ -28,12 +18,12 @@ pub const (
 	flag_version = bool_flag(
 		brief: 'Print the release version'
 		name: 'version'
-		alias: `V`
+		alias: `v`
 	)
 )
 
 // bool_flag create a new boolean flag
 [inline]
 fn bool_flag(cfg FlagConfig) Flag {
-	return new_flag(cfg, .bool)
+	return Flag.new(cfg, .bool)
 }

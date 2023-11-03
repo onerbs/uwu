@@ -10,11 +10,11 @@ pub enum FlagKind {
 
 [params]
 pub struct FlagConfig {
-	name  string
-	alias rune
-	brief string
-	item  string
-	wide  bool
+	name    string
+	alias   rune
+	brief   string
+	item    string
+	is_wide bool
 pub mut:
 	value string
 }
@@ -27,7 +27,7 @@ mut:
 	metro &int = unsafe { 0 }
 }
 
-fn new_flag(cfg FlagConfig, kind FlagKind) Flag {
+fn Flag.new(cfg FlagConfig, kind FlagKind) Flag {
 	if cfg.alias == 0 && cfg.name.len < 1 {
 		panic('FatalError: Every flag requires either a name or an alias.')
 	}
@@ -40,8 +40,10 @@ fn new_flag(cfg FlagConfig, kind FlagKind) Flag {
 const falsy_strings = ['false', '0', 'off', 'no', '']
 
 // bool return the value as a boolean.
+[inline]
 pub fn (self Flag) bool_value() bool {
-	return !cli.falsy_strings.contains(self.value.to_lower())
+	val := self.value.to_lower()
+	return !cli.falsy_strings.contains(val)
 }
 
 // int return the value as an integer.
@@ -65,16 +67,27 @@ pub fn (self Flag) values() []string {
 // -----------------
 
 // find_flag return the flag with the specified id.
-[direct_array_access]
-pub fn (self App) find_flag(id string) !&Flag {
+pub fn (self App) find_flag(id string) ?&Flag {
 	for flag in self.flags {
-		if id.len == 1 {
-			if flag.alias == id[0] {
-				return flag
+		if flag.matches(id) {
+			return flag
+		}
+	}
+	return none
+}
+
+[direct_array_access]
+fn (self Flag) matches(id string) bool {
+	match id.len {
+		0 {}
+		1 {
+			if self.alias == id[0] {
+				return true
 			}
-		} else {
-			if flag.name == id {
-				return flag
+		}
+		else {
+			if self.name == id {
+				return true
 			}
 		}
 	}

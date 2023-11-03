@@ -1,24 +1,24 @@
 module cli
 
-import uwu.this
 import uwu.style
-import uwu.buffer
+import uwu.host
+import uwu.buffer { Buffer }
 
 // version return the version of the App
 pub fn (self App) version() string {
-	appname := style.tint(this.name, style.bold)
+	appname := style.tint(host.app_name, style.bold)
 	version := style.tint('v${self.version}', style.dim)
-	if appname[0] != this.name[0] {
+	if appname[0] != host.app_name[0] {
 		return '\n  ${appname}  ${version}\n'
 	}
 	return '${appname} ${version}'
 }
 
 pub fn (self App) usage() string {
-	mut buf := buffer.new()
+	mut buf := Buffer.new()
 
 	buf.write('\n  ')
-	emblem := style.tag(this.name, style.over_blue)
+	emblem := style.tag(host.app_name, style.over_blue)
 	buf.write(emblem)
 	if buf.last() == `:` {
 		buf.trim(buf.len - 1)
@@ -28,20 +28,20 @@ pub fn (self App) usage() string {
 	buf.writeln(self.brief)
 
 	buf.write('\x1b[2m') // if supports escape sequences...
-	if self.author.len > 0 {
+	if self.author.name.len > 0 {
 		buf.writeln('   ${self.author}')
 	}
 	buf.write('   version ')
 	buf.writeln(self.version)
 	buf.write('\x1b[22m') // if supports escape sequences...
 
-	buf.write('\n  Usage: ${this.name}')
+	buf.write('\n  Usage: ${host.app_name}')
 
 	if self.flags.len > 0 {
-		buf.write(' <OPTIONS>')
+		buf.write(' [options]')
 	}
 	for item in self.items {
-		buf.write(' [${item}]')
+		buf.write(' ${*item}')
 	}
 
 	if self.flags.len > 0 {

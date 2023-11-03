@@ -2,33 +2,30 @@ module cli
 
 [params]
 pub struct AppConfig {
-	author       string
+	author       Author
 	version      string = '0.1.0'
 	with_help    bool   = true
-	with_stdin   bool   = true
 	with_version bool   = true
+	with_stdin   bool
 mut:
-	// todo: remove `need_args` and infer from `.items`
-	need_args int = -1
-	brief     string
-	demos     []string
-	notes     []string
+	brief string
+	demos []string
+	notes []string
 }
 
 [heap; noinit]
 pub struct App {
 	AppConfig
 mut:
-	// todo: use uwu.buffer.Buffer for input
-	input string
-	items []string
+	items []&Item
 	flags []&Flag
 	args  []string
+	input string
 	metro int
 }
 
-// new_app create a new App with the provided configuration.
-pub fn new_app(cfg AppConfig) App {
+// new create a new App with the provided configuration.
+pub fn App.new(cfg AppConfig) App {
 	mut app := App{
 		AppConfig: cfg
 	}
@@ -36,13 +33,6 @@ pub fn new_app(cfg AppConfig) App {
 		mut ref := flag_stdin
 		app.push_flag(mut ref)
 	}
-	// fixme: NO_NEED_ARGS
-	// if app.need_args < 0 {
-	// 	len := app.items.map(it.required).len
-	// 	if len > 0 {
-	// 		app.need_args = len
-	// 	}
-	// }
 	return app
 }
 
@@ -67,44 +57,55 @@ pub fn (self App) get_lines() []string {
 	return self.get_input().split_into_lines()
 }
 
+// ----------------- Items
+
+pub fn (mut self App) item(itm Item) &Item {
+	mut ref := itm
+	self.items << &ref
+	return &ref
+}
+
 // ----------------- Flags
 
 // flag create and push a flag with value.
 [inline]
 pub fn (mut self App) flag(cfg FlagConfig) &Flag {
-	mut flag := new_flag(cfg, .text)
-	return self.push_flag(mut flag)
+	mut flag := Flag.new(cfg, .text)
+	self.push_flag(mut flag)
+	return &flag
 }
 
 // bool_flag create and push a boolean flag.
 [inline]
 pub fn (mut self App) bool_flag(cfg FlagConfig) &Flag {
-	mut flag := new_flag(cfg, .bool)
-	return self.push_flag(mut flag)
+	mut flag := Flag.new(cfg, .bool)
+	self.push_flag(mut flag)
+	return &flag
 }
 
 // int_flag create and push a flag with numeric value.
 [inline]
 pub fn (mut self App) int_flag(cfg FlagConfig) &Flag {
-	mut flag := new_flag(cfg, .int)
-	return self.push_flag(mut flag)
+	mut flag := Flag.new(cfg, .int)
+	self.push_flag(mut flag)
+	return &flag
 }
 
 // push_flag sets the flag metro and pus it into the application flags.
 // fixme: return an error on overlapping identifiers.
-fn (mut self App) push_flag(mut flag Flag) &Flag {
+[inline]
+fn (mut self App) push_flag(mut flag Flag) {
 	self.validate(flag) or { panic(err.msg()) }
 	flag.metro = &self.metro
 	self.flags << flag
-	return flag
 }
 
-fn (self App) validate(target Flag) ! {
+fn (self App) validate(tgt Flag) ! {
 	for flag in self.flags {
-		if target.alias > 0 && target.alias == flag.alias {
+		if tgt.alias > 0 && tgt.alias == flag.alias {
 			return error_with_code('the "-${flag.alias}" flag is taken.', 3)
 		}
-		if target.name.len > 0 && target.name == flag.name {
+		if tgt.name.len > 0 && tgt.name == flag.name {
 			return error_with_code('the "--${flag.name}" flag is taken.', 3)
 		}
 	}
