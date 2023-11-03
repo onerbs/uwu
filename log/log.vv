@@ -1,0 +1,7 @@
+import uwu.log
+
+log.text('this is a sample text')
+log.done('this is a sample text')
+log.info('this is a sample text')
+log.warn('this is a sample text')
+log.fail('this is a sample text')
