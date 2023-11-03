@@ -1,0 +1,5 @@
+import uwu.style
+
+println(style.mark('sample', .bold, .red, .over_white))
+println(style.tag('sample', .bold, .white, .over_red))
+println(style.tint('sample tinted text', .bold, .purple))
