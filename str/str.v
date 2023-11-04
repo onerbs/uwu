@@ -171,7 +171,7 @@ pub fn repeat(c u8, n int) string {
 		return ''
 	}
 	unsafe {
-		buf := &u8(malloc(n + 1))
+		buf := &u8(malloc(n))
 		vmemset(buf, c, n)
 		return buf.vstring_with_len(n)
 	}
@@ -183,7 +183,7 @@ pub fn repeat_str(s string, n int) string {
 	len := s.len * n
 	mut ofs := 0
 	unsafe {
-		buf := &u8(malloc(len + 1))
+		buf := &u8(malloc(len))
 		for _ in 0 .. n {
 			vmemcpy(buf + ofs, s.str, s.len)
 			ofs += s.len
@@ -199,7 +199,7 @@ pub fn space(s string) string {
 	}
 	len := (s.len * 2) - 1
 	unsafe {
-		mut buf := &u8(malloc(len + 1))
+		mut buf := &u8(malloc(len))
 		mut i := 0
 		for c in s {
 			buf[i] = c

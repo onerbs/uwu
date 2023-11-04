@@ -1,6 +1,7 @@
 module uwu
 
 import uwu.ups
+import os
 
 [noinit]
 pub struct File {
@@ -8,60 +9,61 @@ pub struct File {
 	path string
 }
 
-pub fn open(path string, mode string) !File {
-	if path.len < 1 {
-		return ups.invalid('path', path)
+// open will open the specified file in the selected mode.
+pub fn open(name string, mode string) !File {
+	if name.len < 1 {
+		return ups.invalid('file', name)
 	}
-	mut ref := &C.FILE(unsafe { nil })
-	$if windows {
-		ref = C._wfopen(path.to_wide(), mode.to_wide())
+	path := os.real_path(name)
+	mut ref := $if windows {
+		C._wfopen(path.to_wide(), mode.to_wide())
 	} $else {
-		ref = C.fopen(&char(path.str), &char(mode.str))
+		C.fopen(&char(path.str), &char(mode.str))
 	}
 	if isnil(ref) {
-		return ups.cannot('open file', path)
+		return ups.cannot('open the file', name)
 	}
 	return File{ref, path}
 }
 
-pub fn (self File) reopen(mode string) !File {
-	mut ref := &C.FILE(unsafe { nil })
-	$if windows {
-		ref = C._wfreopen(0, mode.to_wide(), self.ref)
+pub fn (f File) reopen(mode string) !File {
+	ref := $if windows {
+		C._wfreopen(0, mode.to_wide(), f.ref)
 	} $else {
-		ref = C.freopen(0, &char(mode.str), self.ref)
+		C.freopen(0, &char(mode.str), f.ref)
 	}
 	if isnil(ref) {
-		return ups.cannot('reopen file', self.path)
+		name := os.base(f.path)
+		return ups.cannot('reopen the file', name)
 	}
 	return File{
-		...self
+		...f
 		ref: ref
 	}
 }
 
 [inline]
-pub fn (self File) rewind() {
-	C.rewind(self.ref)
+pub fn (f File) rewind() {
+	C.rewind(f.ref)
 }
 
 [inline]
-pub fn (self File) close() {
-	C.fclose(self.ref)
+pub fn (f File) close() {
+	C.fclose(f.ref)
 }
+
+fn C.fgetc(&C.FILE) int
 
 // next returns the next byte from the file content.
 // this also allows File to be used as an iterator.
 [inline]
-pub fn (self File) next() ?u8 {
-	byt := C.fgetc(self.ref)
+pub fn (f File) next() ?u8 {
+	byt := C.fgetc(f.ref)
 	if byt < 0 {
 		return none
 	}
 	return u8(byt)
 }
-
-fn C.fgetc(&C.FILE) int
 
 pub const (
 	stdin  = unsafe { File{&C.FILE(voidptr(C.stdin)), ''} }

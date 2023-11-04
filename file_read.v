@@ -1,14 +1,12 @@
 module uwu
 
-import uwu.buffer
-
 // read_bytes will read and return a buffer with all bytes in the source file.
-pub fn (self File) read_bytes() []u8 {
+pub fn (f File) read_bytes() []u8 {
 	defer {
-		self.rewind()
+		f.rewind()
 	}
 	mut buf := []u8{}
-	for byt in self {
+	for byt in f {
 		buf << byt
 	}
 	return buf
@@ -16,32 +14,29 @@ pub fn (self File) read_bytes() []u8 {
 
 // read_text will read and return a string with the content of the source file.
 [inline]
-pub fn (self File) read_text() string {
-	unsafe {
-		dat := self.read_bytes()
-		val := dat[0].vstring_with_len(dat.len)
-		return val
-	}
+pub fn (f File) read_text() string {
+	return f.read_bytes().bytestr()
 }
 
 // read_lines read all lines from the source file.
-pub fn (self File) read_lines() []string {
+pub fn (f File) read_lines() []string {
 	defer {
-		self.rewind()
+		f.rewind()
 	}
-	mut buf := buffer.new()
+	mut buf := []u8{}
 	mut res := []string{}
-	for byt in self {
+	for byt in f {
 		match byt {
 			`\r` {}
 			`\n` {
-				res << buf.str()
+				res << buf.bytestr()
+				buf.trim(0)
 			}
 			else {
 				buf << byt
 			}
 		}
 	}
-	res << buf.str()
+	res << buf.bytestr()
 	return res
 }
