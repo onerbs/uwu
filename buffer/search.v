@@ -1,7 +1,7 @@
 module buffer
 
 // contains check whether the buffer contains the specified slice or not.
-pub fn (self &Buffer) contains(s string) bool {
+pub fn (self Buffer) contains(s string) bool {
 	return self.index(s) >= 0
 }
 

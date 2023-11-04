@@ -1,6 +1,6 @@
 module uwu
 
-import uwu.buffer { Buffer }
+import uwu.buffer
 
 // read_bytes will read and return a buffer with all bytes in the source file.
 pub fn (self File) read_bytes() []u8 {
@@ -29,7 +29,7 @@ pub fn (self File) read_lines() []string {
 	defer {
 		self.rewind()
 	}
-	mut buf := Buffer.new()
+	mut buf := buffer.new()
 	mut res := []string{}
 	for byt in self {
 		match byt {
