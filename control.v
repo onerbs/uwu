@@ -1,16 +1,18 @@
 module uwu
 
+import uwu.log
+
 // report print a fancy error message.
-pub fn report(err IError) {
-	code := err.code()
-	text := err.msg()
+pub fn report(e IError) {
+	code := e.code()
+	text := e.msg().trim_space()
 	if text.len > 0 {
 		match code {
 			0 {
-				eprintln(text)
+				log.text(text)
 			}
 			else {
-				eprintln(' Error: ${text}')
+				log.fail(text)
 			}
 		}
 	}
@@ -18,13 +20,13 @@ pub fn report(err IError) {
 
 // catch report an error and exit with the error status code.
 [inline; noreturn]
-pub fn catch(err IError) {
-	report(err)
-	exit(err.code())
+pub fn catch(e IError) {
+	report(e)
+	exit(e.code())
 }
 
 // die terminate the program execution with an error message.
 [inline; noreturn]
-pub fn die(err string) {
-	catch(error_with_code(err, 2))
+pub fn die(msg string) {
+	catch(error_with_code(msg, 2))
 }

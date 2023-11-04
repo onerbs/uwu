@@ -10,7 +10,6 @@ pub enum TextStyle {
 	invert
 	hidden
 	strike
-
 	black
 	red
 	green
@@ -19,7 +18,6 @@ pub enum TextStyle {
 	purple
 	cyan
 	white
-
 	over_black
 	over_red
 	over_green
@@ -41,7 +39,6 @@ pub fn (ts TextStyle) style(s string) string {
 		.invert { format(s, 7, 27) }
 		.hidden { format(s, 8, 28) }
 		.strike { format(s, 9, 29) }
-
 		.black { format(s, 30, 39) }
 		.red { format(s, 31, 39) }
 		.green { format(s, 32, 39) }
@@ -50,7 +47,6 @@ pub fn (ts TextStyle) style(s string) string {
 		.purple { format(s, 35, 39) }
 		.cyan { format(s, 36, 39) }
 		.white { format(s, 37, 39) }
-
 		.over_black { format(s, 40, 49) }
 		.over_red { format(s, 41, 49) }
 		.over_green { format(s, 42, 49) }

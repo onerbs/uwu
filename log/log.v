@@ -1,33 +1,33 @@
 module log
 
-import uwu.style { tag }
+import uwu.style
 
 [inline]
 pub fn text(s string) {
-	t := tag(@FN, .bold, .blue)
+	t := style.tag(@FN, .bold, .blue)
 	eprintln('${t} ${s}')
 }
 
 [inline]
 pub fn done(s string) {
-	t := tag(@FN, .bold, .green)
+	t := style.tag(@FN, .bold, .green)
 	eprintln('${t} ${s}')
 }
 
 [inline]
 pub fn info(s string) {
-	t := tag(@FN, .bold, .yellow)
+	t := style.tag(@FN, .bold, .yellow)
 	eprintln('${t} ${s}')
 }
 
 [inline]
 pub fn warn(s string) {
-	t := tag(@FN, .bold, .purple)
+	t := style.tag(@FN, .bold, .purple)
 	eprintln('${t} ${s}')
 }
 
 [inline]
 pub fn fail(s string) {
-	t := tag(@FN, .bold, .red)
+	t := style.tag(@FN, .bold, .red)
 	eprintln('${t} ${s}')
 }
