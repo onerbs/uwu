@@ -1,43 +1,43 @@
-import uwu.cli { App }
+import uwu.cli.app as cliapp
 import uwu
 
 fn play() ! {
-	mut app := App.new(
+	mut app := cliapp.new(
 		brief: 'A demo app using the `uwu.cli` module'
 		notes: [
 			'This is a sample note',
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
 		]
-		author: cli.Author{
+		author: cliapp.author(
 			name: 'Alejandro Elí'
 			email: 'dev@onerbs.com'
 			website: 'https://onerbs.com'
-		}
+		)
 	)
 
-	a_item := app.item(
-		name: 'ahoy'
-		value: 'no value'
-		is_optional: false
-	)
-	s_item := app.item(
-		name: 'some'
-		value: 'no value'
-	)
+	// a_item := app.item(
+	// 	name: 'ahoy'
+	// 	value: 'no value'
+	// 	is_optional: false
+	// )
+	// s_item := app.item(
+	// 	name: 'some'
+	// 	value: 'no value'
+	// )
 
-	m_flag := app.flag(
+	m_flag := app.add_flag(
 		brief: 'A dummy flag that captures one value'
 		name: 'dummy'
 		alias: `m`
 		value: 'dummy value'
 	)
-	t_flag := app.int_flag(
+	t_flag := app.add_flag(
 		brief: 'A dummy flag that captures an integer'
 		name: 'time'
 		alias: `t`
 		item: 'minutes'
 	)
-	w_flag := app.flag(
+	w_flag := app.add_flag(
 		brief: 'some wide flag'
 		alias: `w`
 		name: 'wide'
@@ -49,17 +49,17 @@ fn play() ! {
 
 	assert a_item.value() == 'ahoy'
 	assert s_item.value() == 'b'
-	assert t_flag.int_value() == 3
+	assert t_flag.value().int() == 3
 	assert m_flag.value() == 'my message'
-	assert w_flag.values() == ['d', 'e']
+	assert w_flag.value() == 'd;e'
 	assert app.get_args() == ['c']
 
 	println('args: ${app.get_args()}')
 	println('ahoy: ${a_item.value()}')
 	println('some: ${s_item.value()}')
-	println('-t: ${t_flag.int_value()}')
+	println('-t: ${t_flag.value().int()}')
 	println('-m: ${m_flag.value()}')
-	println('-w: ${w_flag.values()}')
+	println('-w: ${w_flag.value()}')
 	println('${*m_flag}')
 }
 
