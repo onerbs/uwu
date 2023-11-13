@@ -1,5 +1,9 @@
 module uwu
 
+import fs
+
+pub const stdin = unsafe { fs.File{ref: &C.FILE(voidptr(C.stdin))} }
+
 [inline]
 pub fn get_bytes() []u8 {
 	return stdin.read_bytes()

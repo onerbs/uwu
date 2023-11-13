@@ -1,4 +1,4 @@
-module uwu
+module fs
 
 // read_bytes will read and return a buffer with all bytes in the source file.
 pub fn (f File) read_bytes() []u8 {

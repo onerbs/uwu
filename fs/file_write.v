@@ -1,4 +1,3 @@
-module uwu
 
 import uwu.ups
 
@@ -7,7 +6,7 @@ import uwu.ups
 pub fn (f File) write_bytes(dat []u8) !int {
 	size := int(C.fwrite(dat.data, 1, dat.len, f.ref))
 	if size < dat.len {
-		return error_with_code('failed to write ${dat.len} bytes, wrote ${size}', 1)
+		return error('failed to write ${dat.len} bytes, wrote ${size}')
 	}
 	return size
 }
@@ -15,8 +14,8 @@ pub fn (f File) write_bytes(dat []u8) !int {
 // write_text will read and return a string with the content of the source file.
 [inline]
 pub fn (f File) write_text(msg string) ! {
-	if C.fputs(msg.str, f.ref) == 0 {
-		return ups.cannot('write_text to file', f.path)
+	if C.fputs(msg.str, f.ref) != 0 {
+		return error('could not write text to file ${f.path}')
 	}
 }
 

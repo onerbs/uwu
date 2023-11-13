@@ -1,4 +1,4 @@
-module uwu
+module fs
 
 import uwu.ups
 import os
@@ -64,9 +64,3 @@ pub fn (f File) next() ?u8 {
 	}
 	return u8(byt)
 }
-
-pub const (
-	stdin  = unsafe { File{&C.FILE(voidptr(C.stdin)), ''} }
-	stdout = unsafe { File{&C.FILE(voidptr(C.stdout)), ''} }
-	stderr = unsafe { File{&C.FILE(voidptr(C.stderr)), ''} }
-)

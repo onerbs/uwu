@@ -1,8 +1,8 @@
-import uwu
+import uwu.fs
 import os
 
 fn test_read_bytes() {
-	mut rft := uwu.open('test_read_file.txt', 'r')!
+	mut rft := fs.open('test_read_file.txt', 'r')!
 	defer {
 		rft.close()
 	}
@@ -10,7 +10,7 @@ fn test_read_bytes() {
 	// vfmt off
 	assert rft.read_bytes() == [
 		u8(`a`), `\n`, `b`, `\n`, `c`, `\n`, `d`, `\n`, `\n`,
-		    `0`, `\n`, `1`, `\n`, `2`, `\n`, `3`, `\n`
+		   `0`,  `\n`, `1`, `\n`, `2`, `\n`, `3`, `\n`
   ]
 	// vfmt on
 	assert rft.read_text() == 'a\nb\nc\nd\n\n0\n1\n2\n3\n'
@@ -18,7 +18,7 @@ fn test_read_bytes() {
 }
 
 fn test_write_bytes() {
-	mut fil := uwu.open('test_write_bytes.txt', 'w')!
+	mut fil := fs.open('test_write_bytes.txt', 'w')!
 	defer {
 		fil.close()
 	}
@@ -30,7 +30,7 @@ fn test_write_bytes() {
 }
 
 fn test_write_text() {
-	mut fil := uwu.open('test_write_text.txt', 'w')!
+	mut fil := fs.open('test_write_text.txt', 'w')!
 	defer {
 		fil.close()
 	}
