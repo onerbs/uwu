@@ -1,5 +1,4 @@
-
-import uwu.ups
+module fs
 
 // write_bytes will read and return a buffer with all bytes in the source file.
 [inline]

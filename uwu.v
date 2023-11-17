@@ -34,18 +34,6 @@ pub fn exec(args ...string) !string {
 	return out
 }
 
-// call execute a command and return the status code.
-[inline]
-pub fn call(args ...string) int {
-	mut cmd := safe_cmd(...args)
-	cmd += $if windows {
-		' >nul 2>nul'
-	} $else {
-		' >/dev/null 2>&1'
-	}
-	return os.system(cmd)
-}
-
 [inline]
 fn safe_cmd(args ...string) string {
 	return args.map(str.safe_quote(it)).join(' ')

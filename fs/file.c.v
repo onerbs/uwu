@@ -9,6 +9,10 @@ pub struct File {
 	path string
 }
 
+pub const (
+	stdin = unsafe { File{ref: &C.FILE(voidptr(C.stdin))} }
+)
+
 // open will open the specified file in the selected mode.
 pub fn open(name string, mode string) !File {
 	if name.len < 1 {
@@ -50,17 +54,4 @@ pub fn (f File) rewind() {
 [inline]
 pub fn (f File) close() {
 	C.fclose(f.ref)
-}
-
-fn C.fgetc(&C.FILE) int
-
-// next returns the next byte from the file content.
-// this also allows File to be used as an iterator.
-[inline]
-pub fn (f File) next() ?u8 {
-	byt := C.fgetc(f.ref)
-	if byt < 0 {
-		return none
-	}
-	return u8(byt)
 }

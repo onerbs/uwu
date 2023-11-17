@@ -8,14 +8,6 @@ fn test_exec() {
 	assert out.len == 0
 }
 
-fn test_call() {
-	mut res := uwu.call('git', 'branch', '--show-current')
-	assert res == 0
-
-	res = uwu.call('touch', '/etc/uwu')
-	assert res != 0
-}
-
 fn test_get_exe_name() {
 	$if windows {
 		assert uwu.get_exe_name('uwu') == 'uwu.exe'
