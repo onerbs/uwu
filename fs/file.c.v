@@ -1,6 +1,5 @@
 module fs
 
-import uwu.ups
 import os
 
 [noinit]
@@ -16,7 +15,7 @@ pub const (
 // open will open the specified file in the selected mode.
 pub fn open(name string, mode string) !File {
 	if name.len < 1 {
-		return ups.invalid('file', name)
+		return error('empty file path')
 	}
 	path := os.real_path(name)
 	mut ref := $if windows {
@@ -25,7 +24,7 @@ pub fn open(name string, mode string) !File {
 		C.fopen(&char(path.str), &char(mode.str))
 	}
 	if isnil(ref) {
-		return ups.cannot('open the file', name)
+		return error('could not open the file ${name}')
 	}
 	return File{ref, path}
 }
@@ -38,7 +37,7 @@ pub fn (f File) reopen(mode string) !File {
 	}
 	if isnil(ref) {
 		name := os.base(f.path)
-		return ups.cannot('reopen the file', name)
+		return error('could not reopen the file ${name}')
 	}
 	return File{
 		...f

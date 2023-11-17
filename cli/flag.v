@@ -1,7 +1,6 @@
 module cli
 
 import uwu.buffer
-import uwu.ups
 
 pub enum FlagKind {
 	bool
@@ -80,7 +79,7 @@ pub fn (self App) find_flag(id string) !&Flag {
 		}
 	}
 	armor := if id.len == 1 { '-${id}' } else { '--${id}' }
-	return ups.unknown('flag', armor)
+	return error('unknown flag ${armor}')
 }
 
 pub fn (self &Flag) armor() string {

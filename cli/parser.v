@@ -1,6 +1,5 @@
 module cli
 
-import uwu.ups
 import uwu
 
 // TODO improve the argument parser.
@@ -15,7 +14,7 @@ pub fn (mut self App) parse() ! {
 [direct_array_access]
 pub fn (mut self App) parse_args(args []string) ! {
 	if args.len < self.need_args {
-		return ups.not_enough('arguments', self.need_args, args.len)
+		return error('not enough arguments. expecting ${self.need_args}, got ${args.len}')
 	}
 
 	if self.with_help {
@@ -80,7 +79,7 @@ fn (mut self App) parse_long_flag(name string, args []string, index int) !int {
 
 	if flag.kind != .bool {
 		if i + 1 >= args.len {
-			return ups.missing_value('flag', name)
+			return error('missing value for flag ${name}')
 		}
 		i++
 	}
@@ -91,7 +90,7 @@ fn (mut self App) parse_long_flag(name string, args []string, index int) !int {
 		.int {
 			val := args[i]
 			if !is_numeric(val) {
-				return ups.unexpected(val, 'an integer')
+				return error('unexpected value. expecting an integer')
 			}
 			flag.value = val
 		}
@@ -126,7 +125,7 @@ fn (mut self App) parse_short_flag(alias rune, args []string, index int) !int {
 
 	if flag.kind != .bool {
 		if i + 1 >= args.len {
-			return ups.missing_value('flag', '-${alias}')
+			return error('missing value for flag -${alias}')
 		}
 		i++
 	}
@@ -138,7 +137,7 @@ fn (mut self App) parse_short_flag(alias rune, args []string, index int) !int {
 		.int {
 			val := args[i]
 			if !is_numeric(val) {
-				return ups.unexpected(val, 'an integer')
+				return error('unexpected value. expecting an integer')
 			}
 			flag.value = val
 		}
