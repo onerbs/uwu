@@ -5,19 +5,19 @@ pub type Buffer = []u8
 const capacity = 0x400
 
 // new create a Buffer with the default capacity.
-[inline]
+@[inline]
 pub fn new() Buffer {
 	return cap(buffer.capacity)
 }
 
 // cap create a Buffer with the specified capacity.
-[inline]
+@[inline]
 pub fn cap(cap int) Buffer {
 	return Buffer([]u8{cap: cap})
 }
 
 // from create a new Buffer using the data in `buf`.
-[inline]
+@[inline]
 pub fn from(buf []u8) Buffer {
 	return Buffer(buf)
 }
@@ -31,13 +31,13 @@ pub fn (mut self Buffer) str() string {
 }
 
 // value get a copy of the accumulated data as string.
-[inline]
+@[inline]
 pub fn (self Buffer) value() string {
 	return self.peek(0, self.len)
 }
 
 // peek get a copy of the specified data slice as string.
-[direct_array_access]
+@[direct_array_access]
 pub fn (self Buffer) peek(beg int, n int) string {
 	if self.len < 1 || n < 1 {
 		return ''
@@ -53,7 +53,7 @@ pub fn (self Buffer) peek(beg int, n int) string {
 }
 
 // strip get the string representation of this item.
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut self Buffer) strip() string {
 	if self.len < 1 {
 		return ''

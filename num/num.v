@@ -13,19 +13,19 @@ pub fn fits[T](n T, m T) (T, T) {
 }
 
 // max get the maximum value of the input.
-[inline]
+@[inline]
 pub fn max[T](a T, b T) T {
 	return if a > b { a } else { b }
 }
 
 // min get the minimum value of the input.
-[inline]
+@[inline]
 pub fn min[T](a T, b T) T {
 	return if a < b { a } else { b }
 }
 
 // max_of get the maximum value of the input array.
-[direct_array_access]
+@[direct_array_access]
 pub fn max_of[T](ary []T) T {
 	if ary.len < 1 {
 		panic(@FN + ' called on an empty array.')
@@ -40,7 +40,7 @@ pub fn max_of[T](ary []T) T {
 }
 
 // min_of get the minimum value of the input array.
-[direct_array_access]
+@[direct_array_access]
 pub fn min_of[T](ary []T) T {
 	if ary.len < 1 {
 		panic(@FN + ' called on an empty array.')
@@ -55,7 +55,7 @@ pub fn min_of[T](ary []T) T {
 }
 
 // within returns the value in the range [a-b].
-[inline]
+@[inline]
 pub fn within[T](n T, min T, max T) T {
 	if n < min {
 		return min

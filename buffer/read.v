@@ -39,7 +39,7 @@ pub fn (mut self Buffer) cut_last(n int) string {
 }
 
 // drop_first discards the first `n` bytes from the buffer.
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut self Buffer) drop_first(n int) {
 	if n < 1 {
 		return

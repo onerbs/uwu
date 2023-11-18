@@ -19,14 +19,14 @@ pub fn report(e IError) {
 }
 
 // catch report an error and exit with the error status code.
-[inline; noreturn]
+@[inline; noreturn]
 pub fn catch(e IError) {
 	report(e)
 	exit(e.code())
 }
 
 // die terminate the program execution with an error message.
-[inline; noreturn]
+@[inline; noreturn]
 pub fn die(msg string) {
 	catch(error_with_code(msg, 2))
 }

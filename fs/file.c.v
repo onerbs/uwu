@@ -2,7 +2,7 @@ module fs
 
 import os
 
-[noinit]
+@[noinit]
 pub struct File {
 	ref  &C.FILE
 	path string
@@ -45,12 +45,12 @@ pub fn (f File) reopen(mode string) !File {
 	}
 }
 
-[inline]
+@[inline]
 pub fn (f File) rewind() {
 	C.rewind(f.ref)
 }
 
-[inline]
+@[inline]
 pub fn (f File) close() {
 	C.fclose(f.ref)
 }

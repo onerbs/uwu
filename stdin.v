@@ -1,18 +1,18 @@
 module uwu
 
-import fs
+import uwu.fs
 
-[inline]
+@[inline]
 pub fn get_bytes() []u8 {
 	return fs.stdin.read_bytes()
 }
 
-[inline]
+@[inline]
 pub fn get_text() string {
 	return fs.stdin.read_text()
 }
 
-[inline]
+@[inline]
 pub fn get_lines() []string {
 	return fs.stdin.read_lines()
 }

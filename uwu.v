@@ -4,7 +4,7 @@ import uwu.str
 import os
 
 // get_args return the command-line arguments.
-[inline]
+@[inline]
 pub fn get_args() []string {
 	return os.args[1..].clone()
 }
@@ -22,7 +22,7 @@ pub fn need_args(min int) ![]string {
 
 // exec execute a command and return it's output.
 // this will throw an error if the return code is not zero.
-[inline]
+@[inline]
 pub fn exec(args ...string) !string {
 	cmd := safe_cmd(...args)
 	res := os.execute(cmd)
@@ -33,7 +33,7 @@ pub fn exec(args ...string) !string {
 	return out
 }
 
-[inline]
+@[inline]
 fn safe_cmd(args ...string) string {
 	return args.map(str.safe_quote(it)).join(' ')
 }

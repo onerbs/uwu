@@ -1,6 +1,6 @@
 module table
 
-[params]
+@[params]
 pub struct TableConfig {
 	rd  string = '\n' // The row delimiter
 	cd  string = ':' // The cell delimiter
@@ -8,25 +8,25 @@ pub struct TableConfig {
 }
 
 // config create a `Table` with the specified configuration.
-[inline]
+@[inline]
 pub fn config(self TableConfig) TableConfig {
 	return self
 }
 
 // source create a `Table` from a string.
-[inline]
+@[inline]
 pub fn (self TableConfig) source(src string) Table {
 	return self.lines(src.split(self.rd))
 }
 
 // lines create a `Table` from a list of lines.
-[inline]
+@[inline]
 pub fn (self TableConfig) lines(src []string) Table {
 	return self.matrix(src.map(it.split(self.cd)))
 }
 
 // matrix create a `Table` from a string matrix.
-[direct_array_access]
+@[direct_array_access]
 pub fn (self TableConfig) matrix(src [][]string) Table {
 	mut metro := []int{}
 	data := src.map(self.parse_row(it, mut metro))
@@ -40,7 +40,7 @@ pub fn (self TableConfig) matrix(src [][]string) Table {
 }
 
 // parse_row parse the raw row updating the metro data.
-[direct_array_access]
+@[direct_array_access]
 fn (self TableConfig) parse_row(row []string, mut metro []int) []string {
 	mut res := []string{}
 	mut len := 0

@@ -1,6 +1,6 @@
 module table
 
-[noinit]
+@[noinit]
 pub struct Table {
 	data  [][]string
 	metro []int
@@ -8,31 +8,31 @@ pub struct Table {
 }
 
 // source create a Table from a string
-[inline]
+@[inline]
 pub fn source(src string) Table {
 	return TableConfig{}.source(src)
 }
 
 // lines create a Table from a list of lines
-[inline]
+@[inline]
 pub fn lines(src []string) Table {
 	return TableConfig{}.lines(src)
 }
 
 // matrix create a Table from a string matrix
-[inline]
+@[inline]
 pub fn matrix(src [][]string) Table {
 	return TableConfig{}.matrix(src)
 }
 
 // str returns a string representation of this `Table`
-[inline]
+@[inline]
 pub fn (self Table) str() string {
 	return self.lines().join_lines()
 }
 
 // lines returns the lines on this Table
-[direct_array_access]
+@[direct_array_access]
 pub fn (self Table) lines() []string {
 	mut buf := []u8{}
 	mut res := []string{}
@@ -67,7 +67,7 @@ pub fn (self Table) lines() []string {
 }
 
 // cells returns the cells on this Table
-[direct_array_access]
+@[direct_array_access]
 pub fn (self Table) cells() [][]string {
 	mut res := self.data.clone()
 	for ix in 0 .. res.len {

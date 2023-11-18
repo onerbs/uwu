@@ -9,20 +9,20 @@ const byt_newline = u8(`\n`)
 // brace will surround the base string in a brace pair or
 // place a bracer at the end and another at the beginning
 // of the base string.
-[inline]
+@[inline]
 pub fn brace(s string, left string) string {
 	right := str.str_pairs[left] or { left }
 	return '${left}${s}${right}'
 }
 
 // brace will surround the base string into.
-[inline]
+@[inline]
 pub fn brace_mirror(s string, left string) string {
 	return '${left}${s}${mirror(left)}'
 }
 
 // digits extract the numeric characters from a string.
-[direct_array_access]
+@[direct_array_access]
 pub fn digits(s string) string {
 	mut buf := []u8{}
 	for byt in s {
@@ -67,7 +67,7 @@ pub fn grow_left(s string, size int) string {
 }
 
 // key_value extract a key-value pair from a string.
-[inline]
+@[inline]
 pub fn key_value(s string, delim string) (string, string) {
 	if s.contains(delim) {
 		key := s.all_before(delim)
@@ -79,7 +79,7 @@ pub fn key_value(s string, delim string) (string, string) {
 
 // lines extract the lines from a string, trimming white spaces
 // and skipping empty lines.
-[direct_array_access]
+@[direct_array_access]
 pub fn lines(s string) []string {
 	mut buf := []u8{}
 	mut res := []string{}
@@ -105,7 +105,7 @@ pub fn lines(s string) []string {
 
 // mirror will reverse the base string, also mirroring any
 // supported character.
-[direct_array_access]
+@[direct_array_access]
 pub fn mirror(s string) string {
 	mut buf := []u8{}
 	for i := s.len - 1; i >= 0; i-- {
@@ -120,20 +120,20 @@ pub fn mirror(s string) string {
 }
 
 // quote will surround the provided string in double quotes.
-[inline]
+@[inline]
 pub fn quote(s string) string {
 	return brace(s, '"')
 }
 
 // single_quote will surround the provided string in single quotes.
-[inline]
+@[inline]
 pub fn single_quote(s string) string {
 	return brace(s, "'")
 }
 
 // safe_quote will surround the provided string in double quotes
 // if it contains spaces, escaping the already existing double quotes.
-[inline]
+@[inline]
 pub fn safe_quote(s string) string {
 	if s.contains(' ') && !is_quoted(s) {
 		if s.contains('"') {
@@ -144,7 +144,7 @@ pub fn safe_quote(s string) string {
 	return s
 }
 
-[inline]
+@[inline]
 pub fn unquote(s string) string {
 	val := s.trim_space()
 	if is_quoted(val) {
@@ -158,7 +158,7 @@ pub fn unquote(s string) string {
 const quote_chars = [`'`, `"`, `\``]
 
 // is_quoted tells whether the provided string is surrounded by quotes.
-[direct_array_access; inline]
+@[direct_array_access; inline]
 pub fn is_quoted(s string) bool {
 	val := s.trim_space()
 	return val.len > 1 && val[0] == val[val.len - 1] && str.quote_chars.contains(val[0])

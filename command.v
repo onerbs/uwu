@@ -28,7 +28,7 @@ pub fn need_exe(name string) Command {
 // exec will call the executable with the provided arguments,
 // capture and return the output.
 // this will return an error if the execution fails.
-[inline]
+@[inline]
 pub fn (exe Command) exec(args ...string) !string {
 	mut cmd := [exe.path]
 	cmd << args

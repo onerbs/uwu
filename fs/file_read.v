@@ -13,7 +13,7 @@ pub fn (f File) read_bytes() []u8 {
 }
 
 // read_text will read and return a string with the content of the source file.
-[inline]
+@[inline]
 pub fn (f File) read_text() string {
 	return f.read_bytes().bytestr()
 }
@@ -45,7 +45,7 @@ fn C.fgetc(&C.FILE) int
 
 // next returns the next byte from the file content.
 // this also allows File to be used as an iterator.
-[inline]
+@[inline]
 pub fn (f File) next() ?u8 {
 	byt := C.fgetc(f.ref)
 	if byt < 0 {
