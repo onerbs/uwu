@@ -4,7 +4,7 @@ import uwu.style
 
 @[inline]
 pub fn text(s string) {
-	t := style.tag(@FN, .bold, .blue)
+	t := style.tag(' •• ', .bold, .white)
 	eprintln('${t} ${s}')
 }
 

@@ -2,19 +2,19 @@ import uwu.fs
 import os
 
 fn test_read_bytes() {
-	mut rft := fs.open('test_read_file.txt', 'r')!
+	mut fil := fs.open('test_read_file.txt', 'r')!
 	defer {
-		rft.close()
+		fil.close()
 	}
 
 	// vfmt off
-	assert rft.read_bytes() == [
+	assert fil.read_bytes() == [
 		u8(`a`), `\n`, `b`, `\n`, `c`, `\n`, `d`, `\n`, `\n`,
 		   `0`,  `\n`, `1`, `\n`, `2`, `\n`, `3`, `\n`
-  ]
+	]
 	// vfmt on
-	assert rft.read_text() == 'a\nb\nc\nd\n\n0\n1\n2\n3\n'
-	assert rft.read_lines().len == 10
+	assert fil.read_text() == 'a\nb\nc\nd\n\n0\n1\n2\n3\n'
+	assert fil.read_lines().len == 10
 }
 
 fn test_write_bytes() {

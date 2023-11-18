@@ -15,7 +15,8 @@ pub fn need_args(min int) ![]string {
 	args := get_args()
 	argc := args.filter(!it.starts_with('-')).len
 	if argc < min {
-		return error_with_code('not enough arguments. expecting ${min}, got ${argc}', 1)
+		msg := 'not enough arguments. expecting ${min}, got ${argc}'
+		return error_with_code(msg, 1)
 	}
 	return args
 }

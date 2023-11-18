@@ -8,8 +8,12 @@ pub struct File {
 	path string
 }
 
+pub fn (f File) str() string {
+	return '"${f.path}"'
+}
+
 pub const (
-	stdin = unsafe { File{ref: &C.FILE(voidptr(C.stdin))} }
+	stdin = unsafe { File{&C.FILE(voidptr(C.stdin)), ''} }
 )
 
 // open will open the specified file in the selected mode.
@@ -18,7 +22,7 @@ pub fn open(name string, mode string) !File {
 		return error('empty file path')
 	}
 	path := os.real_path(name)
-	mut ref := $if windows {
+	ref := $if windows {
 		C._wfopen(path.to_wide(), mode.to_wide())
 	} $else {
 		C.fopen(&char(path.str), &char(mode.str))
@@ -39,10 +43,7 @@ pub fn (f File) reopen(mode string) !File {
 		name := os.base(f.path)
 		return error('could not reopen the file ${name}')
 	}
-	return File{
-		...f
-		ref: ref
-	}
+	return File{ref, f.path}
 }
 
 @[inline]
