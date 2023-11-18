@@ -1,19 +1,20 @@
-module cli
+module app
 
 import uwu
+import uwu.cli.flag
 
-[inline]
+@[inline]
 pub fn (mut self App) parse() ! {
 	return self.parse_args(uwu.get_args())
 }
 
-[direct_array_access]
+@[direct_array_access]
 pub fn (mut self App) parse_args(args []string) ! {
 	if self.with_help {
-		self.push_flag(mut flag_help)
+		self.flag(flag.help)
 	}
 	if self.with_version {
-		self.push_flag(mut flag_version)
+		self.flag(flag.version)
 	}
 
 	for flag in self.flags {
@@ -44,34 +45,23 @@ pub fn (mut self App) parse_args(args []string) ! {
 			else {
 				if it.starts_with('-') {
 					id := it.trim_left('-')
-					if self.with_help && flag_help.matches(id) {
+					if self.with_help && flag.help.matches(id) {
 						return error(self.usage())
 					}
-					if self.with_version && flag_version.matches(id) {
+					if self.with_version && flag.version.matches(id) {
 						return error(self.version())
 					}
-
 					if mut flag := self.find_flag(id) {
-						if flag.kind != .bool {
-							ix++
-							if ix >= args.len {
-								return ups.missing_value('flag', it)
-							}
-						}
 						match flag.kind {
 							.bool {
 								flag.value = 'true'
 							}
-							.int {
-								flag.value = args[ix]
-							}
 							.text {
-								if flag.is_wide {
-									flag.value = args[ix..].join(';')
-									ix = args.len
-								} else {
-									flag.value = args[ix]
+								ix++
+								if ix >= args.len {
+									return error('flag "${it}" not found')
 								}
+								flag.value = args[ix]
 							}
 						}
 					} else {
@@ -84,18 +74,18 @@ pub fn (mut self App) parse_args(args []string) ! {
 		}
 	}
 
-	for itx in 0 .. self.items.len {
-		mut ref := self.items[itx]
-		if val := rest[0] {
-			ref.value = val
-			rest.delete(0)
-		} else {
-			if !ref.is_optional {
-				return ups.missing_value('item', ref.name)
-			}
-			break
-		}
-	}
+	// for itx in 0 .. self.items.len {
+	// 	mut ref := self.items[itx]
+	// 	if val := rest[0] {
+	// 		ref.value = val
+	// 		rest.delete(0)
+	// 	} else {
+	// 		if !ref.is_optional {
+	// 			return ups.missing_value('item', ref.name)
+	// 		}
+	// 		break
+	// 	}
+	// }
 
 	self.args << rest
 }

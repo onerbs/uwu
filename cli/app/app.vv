@@ -1,18 +1,17 @@
-import uwu.cli.app as cliapp
+import uwu.cli
 import uwu
 
 fn play() ! {
-	mut app := cliapp.new(
+	mut app := cli.new_app(
 		brief: 'A demo app using the `uwu.cli` module'
 		notes: [
 			'This is a sample note',
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
 		]
-		author: cliapp.author(
+		author: cli.app_author(
 			name: 'Alejandro Elí'
-			email: 'dev@onerbs.com'
-			website: 'https://onerbs.com'
 		)
+		version: '1.0.4',
 	)
 
 	// a_item := app.item(
@@ -25,41 +24,40 @@ fn play() ! {
 	// 	value: 'no value'
 	// )
 
-	m_flag := app.add_flag(
+	m_flag := app.flag(
 		brief: 'A dummy flag that captures one value'
 		name: 'dummy'
 		alias: `m`
 		value: 'dummy value'
 	)
-	t_flag := app.add_flag(
+	t_flag := app.flag(
 		brief: 'A dummy flag that captures an integer'
 		name: 'time'
 		alias: `t`
 		item: 'minutes'
 	)
-	w_flag := app.add_flag(
-		brief: 'some wide flag'
-		alias: `w`
-		name: 'wide'
-		is_wide: true
+	q_flag := app.flag(
+		kind: .bool
+		brief: 'some boolean flag'
+		alias: `q`
 	)
 
 	// app.parse_args(['--help'])!
-	app.parse_args(['-t', '3', 'ahoy', '-m', 'my message', 'b', 'c', '-w', 'd', 'e'])!
+	app.parse_args(['-t', '3', 'ahoy', '-m', 'my message', 'b', 'c', '-q', 'd', 'e'])!
 
-	assert a_item.value() == 'ahoy'
-	assert s_item.value() == 'b'
-	assert t_flag.value().int() == 3
-	assert m_flag.value() == 'my message'
-	assert w_flag.value() == 'd;e'
-	assert app.get_args() == ['c']
+	// assert a_item.value() == 'ahoy'
+	// assert s_item.value() == 'b'
+	assert m_flag.value == 'my message'
+	assert t_flag.int() == 3
+	assert q_flag.bool() == true
+	assert app.get_args() == ['ahoy', 'b', 'c', 'd', 'e']
 
 	println('args: ${app.get_args()}')
-	println('ahoy: ${a_item.value()}')
-	println('some: ${s_item.value()}')
-	println('-t: ${t_flag.value().int()}')
-	println('-m: ${m_flag.value()}')
-	println('-w: ${w_flag.value()}')
+	// println('ahoy: ${a_item.value()}')
+	// println('some: ${s_item.value()}')
+	println('-m: ${m_flag.value}')
+	println('-t: ${t_flag.int()}')
+	println('-q: ${q_flag.bool()}')
 	println('${*m_flag}')
 }
 

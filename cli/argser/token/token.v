@@ -10,6 +10,6 @@ pub enum TokenKind {
 
 pub struct Token {
 pub:
-	kind TokenKind   // the token kind
-	lit  string // literal representation of the token
+	kind TokenKind // the token kind
+	lit  string    // literal representation of the token
 }

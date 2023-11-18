@@ -1,22 +1,26 @@
 module flag
 
 pub const (
-	flag_help    = Config{
+	help = Config{
+		kind: .bool
 		brief: 'Print this help and exit'
 		name: 'help'
 		alias: `h`
 	}
-	flag_version = Config{
+	version = Config{
+		kind: .bool
 		brief: 'Print the release version'
 		name: 'version'
 		alias: `v`
 	}
-	flag_quiet   = Config{
+	quiet = Config{
+		kind: .bool
 		brief: 'Enable the quiet mode'
 		name: 'quiet'
 		alias: `q`
 	}
-	flag_stdin   = Config{
+	stdin = Config{
+		kind: .bool
 		brief: 'Read from the standard input'
 		alias: `-`
 	}

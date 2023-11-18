@@ -58,10 +58,7 @@ pub fn (app App) usage() string {
 
 // version return the version of the App
 pub fn (app App) version() string {
-	appname := style.tint(host.app_name, .bold)
-	version := style.tint('v${app.version}', .dim)
-	if appname[0] != host.app_name[0] {
-		return '\n  ${appname}  ${version}\n'
-	}
-	return '${appname} ${version}'
+	nam := style.tint(host.app_name, .bold)
+	ver := style.tint('v${app.version}', .dim)
+	return '${nam} ${ver}'
 }

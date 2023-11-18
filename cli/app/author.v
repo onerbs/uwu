@@ -1,15 +1,9 @@
 module app
 
 pub struct Author {
-	name    string [required]
+	name    string @[required]
 	email   string
 	website string
-}
-
-// author create a new Author instance.
-[inline]
-pub fn author(a Author) Author {
-	return a
 }
 
 pub fn (a Author) str() string {

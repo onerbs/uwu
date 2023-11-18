@@ -1,6 +1,6 @@
 module argser
 
 pub struct Argser {
-  ref &app.App
-  args []string
+	ref  &app.App
+	args []string
 }
